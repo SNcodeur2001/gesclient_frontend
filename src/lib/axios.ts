@@ -23,7 +23,8 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       useAuthStore.getState().logout()
-      window.location.href = '/login'
+      // Ne pas utiliser window.location.href qui recharge la page
+      // La redirection sera gérée par le composant AuthGuard
     }
     return Promise.reject(error)
   }

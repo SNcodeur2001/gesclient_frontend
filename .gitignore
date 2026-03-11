@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+Donnes_backend.md
+.env
+.env.production

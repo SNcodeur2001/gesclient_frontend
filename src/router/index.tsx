@@ -13,9 +13,6 @@ import {
 } from '../pages'
 
 const router = createBrowserRouter([
-  // Redirection racine
-  { path: '/', element: <Navigate to="/dashboard" replace /> },
-
   // Login (public)
   { path: '/login', element: <LoginPage /> },
 
@@ -23,6 +20,7 @@ const router = createBrowserRouter([
   {
     element: <AuthGuard />,
     children: [
+      { path: '/',              element: <Navigate to="/dashboard" replace /> },
       { path: '/dashboard',     element: <DashboardPage /> },
       { path: '/notifications', element: <NotificationsPage /> },
       { path: '/profil',        element: <ProfilPage /> },
@@ -64,8 +62,8 @@ const router = createBrowserRouter([
     ],
   },
 
-  // 404
-  { path: '*', element: <Navigate to="/dashboard" replace /> },
+  // 404 → login
+  { path: '*', element: <Navigate to="/login" replace /> },
 ])
 
 export function AppRouter() {
