@@ -2,7 +2,7 @@ import { PageLayout } from './components/layout/PageLayout'
 export { DashboardPage } from './features/dashboard/DashboardPage'
 export {ClientsListPage} from './features/clients/ClientsListPage'
 export { ClientFormPage } from './features/clients/ClientFormPage'
-
+export {ClientDetailPage} from './features/clients/ClientDetailPage'
 // Composant générique pour les pages en cours de développement
 function ComingSoon({ title }: { title: string }) {
   return (
@@ -21,7 +21,7 @@ function ComingSoon({ title }: { title: string }) {
 }
 
 // export const ClientsListPage    = () => <ComingSoon title="Liste des Clients" />
-export const ClientDetailPage   = () => <ComingSoon title="Détail Client" />
+// export const ClientDetailPage   = () => <ComingSoon title="Détail Client" />
 // export const ClientFormPage     = () => <ComingSoon title="Gestion des Clients" />
 export const ClientImportPage   = () => <ComingSoon title="Importer des Clients" />
 export const CommandesListPage  = () => <ComingSoon title="Liste des Commandes" />

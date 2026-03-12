@@ -4,10 +4,11 @@ import { PageLayout } from '../../components/layout/PageLayout'
 import { Badge } from '../../components/ui/Badge'
 import { useClients, useDeleteClient, useExportClients } from './hooks/useClients'
 import { useAuthStore } from '../../store/authStore'
+import { useToastStore } from '../../store/toastStore'
 import type { ClientListParams, ClientType, ClientStatut } from '../../types'
 import {
   Search, Plus, Download, Pencil, Trash2, TrendingUp,
-  ChevronLeft, ChevronRight,
+  ChevronLeft, ChevronRight, Eye,
 } from 'lucide-react'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -134,6 +135,7 @@ export function ClientsListPage() {
   const navigate = useNavigate()
   const { user } = useAuthStore()
   const isDirecteur = user?.role === 'DIRECTEUR'
+  const addToast = useToastStore((state) => state.addToast)
 
   // Filtre type forcé selon le rôle
   const forcedType: ClientType | undefined =
@@ -188,12 +190,18 @@ export function ClientsListPage() {
 
   const handleDelete = async () => {
     if (!deleteTarget) return
-    await deleteMutation.mutateAsync(deleteTarget.id)
-    setDeleteTarget(null)
+    try {
+      await deleteMutation.mutateAsync(deleteTarget.id)
+      addToast('Client supprimé avec succès', 'success')
+      setDeleteTarget(null)
+    } catch (error) {
+      addToast('Erreur lors de la suppression', 'error')
+    }
   }
 
   const handleExport = () => {
     exportMutation.mutate({ type: params.type, statut: params.statut })
+    addToast('Export en cours de préparation...', 'info')
   }
 
   return (
@@ -245,9 +253,9 @@ export function ClientsListPage() {
         </div>
 
         {/* ── Filtres ── */}
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-wrap items-center gap-3">
+        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-wrap items-center gap-4">
           {/* Recherche */}
-          <div className="flex-1 min-w-[260px] relative">
+          <div className="flex-1 min-w-[280px] relative">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
@@ -285,7 +293,7 @@ export function ClientsListPage() {
           <button
             onClick={handleExport}
             disabled={exportMutation.isPending}
-            className="flex items-center gap-2 px-4 py-2 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 transition-colors text-sm font-medium disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 transition-colors text-sm font-medium disabled:opacity-50 ml-auto"
           >
             <Download size={16} />
             {exportMutation.isPending ? 'Export...' : 'Exporter'}
@@ -358,7 +366,14 @@ export function ClientsListPage() {
                         }
                       </td>
                       <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center justify-end gap-1">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => navigate(`/clients/${client.id}`)}
+                            className="p-1.5 text-slate-400 hover:text-[#2563EB] transition-colors rounded"
+                            title="Voir"
+                          >
+                            <Eye size={16} />
+                          </button>
                           <button
                             onClick={() => navigate(`/clients/${client.id}/edit`)}
                             className="p-1.5 text-slate-400 hover:text-[#2563EB] transition-colors rounded"

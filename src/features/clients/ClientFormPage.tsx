@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { PageLayout } from '../../components/layout/PageLayout'
 import { useAuthStore } from '../../store/authStore'
+import { useToastStore } from '../../store/toastStore'
 import { useClient, useCreateClient, useUpdateClient } from './hooks/useClients'
 import type { CreateClientDto, ClientType } from '../../types'
 import { ArrowLeft, Info, UserPlus, Save } from 'lucide-react'
@@ -69,7 +70,7 @@ function Select({
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-2 mb-4">
+    <div className="flex items-center gap-2 mb-5">
       <span className="size-2 rounded-full bg-[#2563EB] shrink-0" />
       <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">{children}</span>
     </div>
@@ -83,6 +84,7 @@ export function ClientFormPage() {
   const { id } = useParams<{ id: string }>()
   const isEdit = !!id
   const { user } = useAuthStore()
+  const addToast = useToastStore((state) => state.addToast)
 
   // Forcer le type selon le rôle
   const forcedType: ClientType | undefined =
@@ -142,8 +144,10 @@ export function ClientFormPage() {
 
     if (isEdit && id) {
       await updateMutation.mutateAsync({ id, dto })
+      addToast('Client mis à jour avec succès', 'success')
     } else {
       await createMutation.mutateAsync(dto)
+      addToast('Client créé avec succès', 'success')
     }
 
     navigate('/clients')
@@ -164,7 +168,7 @@ export function ClientFormPage() {
 
   return (
     <PageLayout title="Gestion des Clients">
-      <div className="max-w-3xl space-y-6">
+      <div className="max-w-7xl space-y-6">
 
         {/* ── Retour ── */}
         <button
@@ -181,27 +185,27 @@ export function ClientFormPage() {
         </h1>
 
         {/* ── Alerte champs obligatoires ── */}
-        <div className="flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-lg px-4 py-3 text-sm text-blue-700">
+        <div className="flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-lg px-5 py-4 text-sm text-blue-700">
           <Info size={16} className="shrink-0" />
           Les champs marqués d'un astérisque (*) sont obligatoires
         </div>
 
         {/* ── Formulaire ── */}
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 space-y-8">
-            <div>
-              <h2 className="text-base font-semibold text-slate-800 mb-1">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 space-y-10">
+            <div className="pb-6 border-b border-slate-100">
+              <h2 className="text-base font-semibold text-slate-800 mb-2">
                 Informations d'identification
               </h2>
-              <p className="text-sm text-slate-400">
+              <p className="text-sm text-slate-500">
                 Veuillez renseigner les détails du client pour l'ajouter à la base commerciale.
               </p>
             </div>
 
             {/* ── IDENTITÉ ── */}
-            <div>
+            <div className="pb-2">
               <SectionTitle>Identité</SectionTitle>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <Label required>Nom</Label>
                   <Input
@@ -218,10 +222,10 @@ export function ClientFormPage() {
             </div>
 
             {/* ── COORDONNÉES ── */}
-            <div>
+            <div className="pb-2">
               <SectionTitle>Coordonnées</SectionTitle>
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <Label>Email</Label>
                     <Input
@@ -263,9 +267,9 @@ export function ClientFormPage() {
             </div>
 
             {/* ── CLASSIFICATION BUSINESS ── */}
-            <div>
+            <div className="pb-2">
               <SectionTitle>Classification Business</SectionTitle>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <Label required>Type</Label>
                   {forcedType ? (
@@ -296,7 +300,7 @@ export function ClientFormPage() {
             </div>
 
             {/* ── NOTES ── */}
-            <div>
+            <div className="pb-2">
               <Label>Notes internes</Label>
               <textarea
                 placeholder="Précisez ici les particularités de ce client..."
@@ -334,7 +338,7 @@ export function ClientFormPage() {
         </form>
 
         {/* ── Info card bas ── */}
-        <div className="bg-white border border-slate-200 rounded-xl p-5 flex gap-4">
+        <div className="mt-8 bg-white border border-slate-200 rounded-xl p-6 flex gap-5">
           <div className="size-10 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
             <UserPlus size={18} className="text-[#2563EB]" />
           </div>
