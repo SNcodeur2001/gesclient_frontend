@@ -1,4 +1,5 @@
-import { PageLayout } from "./components/layout/PageLayout" 
+import { PageLayout } from './components/layout/PageLayout'
+export { DashboardPage } from './features/dashboard/DashboardPage'
 
 // Composant générique pour les pages en cours de développement
 function ComingSoon({ title }: { title: string }) {
@@ -17,7 +18,6 @@ function ComingSoon({ title }: { title: string }) {
   )
 }
 
-export const DashboardPage      = () => <ComingSoon title="Tableau de bord" />
 export const ClientsListPage    = () => <ComingSoon title="Liste des Clients" />
 export const ClientDetailPage   = () => <ComingSoon title="Détail Client" />
 export const ClientFormPage     = () => <ComingSoon title="Gestion des Clients" />
