@@ -2,15 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../../store/authStore'
 import api from '../../../lib/axios'
-import type { User, Role } from '../../../types'
-
-interface LoginResponse {
-  success: boolean
-  data: {
-    access_token: string
-    refresh_token: string
-  }
-}
+import type { User } from '../../../types'
 
 interface LoginCredentials {
   email: string
@@ -34,31 +26,45 @@ export function useLogin(): UseLoginReturn {
     setLoading(true)
 
     try {
-      const { data } = await api.post<LoginResponse>('/auth/login', { email, password })
-      
-      const token = data.data?.access_token
-      if (!token) {
-        setError('Token non reçu')
+      // 1. Login → récupérer les tokens
+      const { data: loginData } = await api.post('/auth/login', { email, password })
+
+      const accessToken: string = loginData.data?.access_token ?? loginData.access_token
+      const refreshToken: string = loginData.data?.refresh_token ?? loginData.refresh_token
+
+      if (!accessToken || !refreshToken) {
+        setError('Réponse du serveur invalide.')
         return false
       }
 
-      // Créer un user factice - l'API ne retourne pas les infos utilisateur
-      const user: User = {
-        id: email,
-        email,
-        nom: 'User',
-        prenom: '',
-        role: 'DIRECTEUR' as Role,
-      }
+      // 2. Stocker temporairement le token pour appeler /me
+      useAuthStore.getState().setAuth(
+        { id: '', nom: '', prenom: '', email: '', role: 'COMMERCIAL' },
+        accessToken,
+        refreshToken
+      )
 
-      setAuth(user, token)
+      // 3. Récupérer le vrai profil utilisateur
+      const { data: meData } = await api.get('/auth/me')
+      const user: User = meData.data ?? meData
+
+      // 4. Stocker auth complète avec le vrai user
+      setAuth(user, accessToken, refreshToken)
+
+      // 5. Redirection selon le rôle
       navigate('/dashboard', { replace: true })
       return true
+
     } catch (err: any) {
+      // Nettoyer le store en cas d'erreur
+      useAuthStore.getState().logout()
+
       if (err.response?.status === 401) {
         setError('Email ou mot de passe incorrect.')
+      } else if (err.response?.data?.message) {
+        setError(err.response.data.message)
       } else {
-        setError(err.response?.data?.message || 'Une erreur est survenue.')
+        setError('Une erreur est survenue. Veuillez réessayer.')
       }
       return false
     } finally {

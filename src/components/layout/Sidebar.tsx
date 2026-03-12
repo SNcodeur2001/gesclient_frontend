@@ -1,10 +1,11 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard, Users, ShoppingCart, Truck,
   FileText, Bell, ClipboardList, LogOut
 } from 'lucide-react'
 import { clsx } from 'clsx'
 import { useAuthStore } from '../../store/authStore'
+import { useLogout } from '../../features/auth/hooks/useLogout'
 import { Badge } from '../ui/Badge'
 import type { Role } from '../../types'
 
@@ -16,13 +17,13 @@ interface NavItem {
 
 const navByRole: Record<Role, NavItem[]> = {
   DIRECTEUR: [
-    { label: 'Tableau de bord', path: '/dashboard',      icon: <LayoutDashboard size={18} /> },
-    { label: 'Clients',         path: '/clients',         icon: <Users size={18} /> },
-    { label: 'Commandes',       path: '/commandes',       icon: <ShoppingCart size={18} /> },
-    { label: 'Collectes',       path: '/collectes',       icon: <Truck size={18} /> },
-    { label: 'Factures',        path: '/factures',        icon: <FileText size={18} /> },
-    { label: 'Notifications',   path: '/notifications',   icon: <Bell size={18} /> },
-    { label: 'Audit Trail',     path: '/audit',           icon: <ClipboardList size={18} /> },
+    { label: 'Tableau de bord', path: '/dashboard',    icon: <LayoutDashboard size={18} /> },
+    { label: 'Clients',         path: '/clients',       icon: <Users size={18} /> },
+    { label: 'Commandes',       path: '/commandes',     icon: <ShoppingCart size={18} /> },
+    { label: 'Collectes',       path: '/collectes',     icon: <Truck size={18} /> },
+    { label: 'Factures',        path: '/factures',      icon: <FileText size={18} /> },
+    { label: 'Notifications',   path: '/notifications', icon: <Bell size={18} /> },
+    { label: 'Audit Trail',     path: '/audit',         icon: <ClipboardList size={18} /> },
   ],
   COMMERCIAL: [
     { label: 'Tableau de bord', path: '/dashboard',    icon: <LayoutDashboard size={18} /> },
@@ -38,18 +39,13 @@ const navByRole: Record<Role, NavItem[]> = {
 }
 
 export function Sidebar() {
-  const { user, logout } = useAuthStore()
-  const navigate = useNavigate()
+  const { user } = useAuthStore()
+  const { logout, loading } = useLogout()
 
   if (!user) return null
 
   const navItems = navByRole[user.role]
   const initials = `${user.prenom?.[0] ?? ''}${user.nom?.[0] ?? ''}`.toUpperCase()
-
-  const handleLogout = () => {
-    logout()
-    navigate('/login')
-  }
 
   return (
     <aside className="fixed top-0 left-0 h-screen w-[260px] bg-[#1E293B] flex flex-col z-40">
@@ -105,11 +101,12 @@ export function Sidebar() {
           </div>
         </div>
         <button
-          onClick={handleLogout}
-          className="flex items-center gap-2 text-slate-400 hover:text-white text-sm transition-colors w-full px-1"
+          onClick={logout}
+          disabled={loading}
+          className="flex items-center gap-2 text-slate-400 hover:text-white disabled:opacity-50 text-sm transition-colors w-full px-1"
         >
           <LogOut size={15} />
-          Déconnexion
+          {loading ? 'Déconnexion...' : 'Déconnexion'}
         </button>
       </div>
     </aside>
