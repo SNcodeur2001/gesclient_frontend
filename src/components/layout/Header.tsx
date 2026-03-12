@@ -1,5 +1,5 @@
 import { Bell, Search } from 'lucide-react'
-import { useAuthStore } from '../../store/authStore'
+// import { useAuthStore } from '../../store/authStore'
 import { Link } from 'react-router-dom'
 
 interface HeaderProps {
@@ -7,7 +7,7 @@ interface HeaderProps {
 }
 
 export function Header({ title }: HeaderProps) {
-  const { user } = useAuthStore()
+  // const { user } = useAuthStore()
 
   const today = new Date().toLocaleDateString('fr-FR', {
     day: '2-digit',
