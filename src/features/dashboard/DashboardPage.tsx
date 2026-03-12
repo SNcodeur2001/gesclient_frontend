@@ -334,7 +334,7 @@ function DashboardDirecteurPage() {
                     fill="#2563EB"
                     opacity={0.25}
                     radius={[4, 4, 0, 0]}
-                    onMouseEnter={(_, index, e: any) => {
+                    onMouseEnter={(_, _index, e: any) => {
                       if (e?.target) e.target.style.opacity = "1";
                     }}
                   />

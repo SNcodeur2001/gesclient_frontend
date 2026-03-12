@@ -8,7 +8,6 @@ interface HeaderProps {
 
 export function Header({ title }: HeaderProps) {
   const { user } = useAuthStore()
-  const initials = `${user?.prenom?.[0] ?? ''}${user?.nom?.[0] ?? ''}`.toUpperCase()
 
   const today = new Date().toLocaleDateString('fr-FR', {
     day: '2-digit',

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { PageLayout } from '../../components/layout/PageLayout'
 import { Badge } from '../../components/ui/Badge'
 import api from '../../lib/axios'
-import type { CommandeResponseDto, PaginatedResponse } from '../../types'
+import type { CommandeResponseDto } from '../../types'
 import { PlusCircle, UserPlus } from 'lucide-react'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

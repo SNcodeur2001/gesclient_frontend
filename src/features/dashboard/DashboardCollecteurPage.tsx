@@ -92,7 +92,7 @@ function useCollecteurEvolution() {
 
       // Transformer en tableau pour recharts
       return Object.entries(skeleton).map(([key, tonnage]) => {
-        const [year, month] = key.split('-').map(Number)
+        const [, month] = key.split('-').map(Number)
         return { mois: MONTHS_FR[month], tonnage }
       })
     },
