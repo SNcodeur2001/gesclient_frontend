@@ -101,7 +101,7 @@ export function ClientFormPage() {
     handleSubmit,
     reset,
     setValue,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<ClientFormValues>({
     defaultValues: {
       statut: 'ACTIF',

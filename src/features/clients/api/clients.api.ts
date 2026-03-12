@@ -4,7 +4,6 @@ import type {
   CreateClientDto,
   UpdateClientDto,
   ClientListParams,
-  PaginatedResponse,
 } from '../../../types'
 
 export async function fetchClients(params: ClientListParams) {

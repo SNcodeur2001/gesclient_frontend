@@ -159,7 +159,7 @@ export function ClientsListPage() {
 
   // Stats calculées depuis la liste
   const totalActifs = data?.items.filter(c => c.statut === 'ACTIF').length ?? 0
-  const totalProspects = data?.items.filter(c => c.statut === 'PROSPECT').length ?? 0
+  // const totalProspects = data?.items.filter(c => c.statut === 'PROSPECT').length ?? 0
   const totalClients = data?.total ?? 0
   const tauxConversion = totalClients > 0
     ? Math.round((totalActifs / totalClients) * 100)
