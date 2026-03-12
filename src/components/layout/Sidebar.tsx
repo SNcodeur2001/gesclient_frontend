@@ -33,6 +33,7 @@ const navByRole: Record<Role, NavItem[]> = {
   ],
   COLLECTEUR: [
     { label: 'Tableau de bord', path: '/dashboard',    icon: <LayoutDashboard size={18} /> },
+    { label: 'Clients',         path: '/clients',       icon: <Users size={18} /> },
     { label: 'Collectes',       path: '/collectes',     icon: <Truck size={18} /> },
     { label: 'Notifications',   path: '/notifications', icon: <Bell size={18} /> },
   ],

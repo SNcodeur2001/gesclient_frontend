@@ -27,22 +27,37 @@ const router = createBrowserRouter([
     ],
   },
 
-  // Routes protégées — DIRECTEUR + COMMERCIAL
+  // Routes clients — DIRECTEUR + COMMERCIAL + COLLECTEUR
+  // (le backend filtre automatiquement par rôle : COLLECTEUR → apporteurs, COMMERCIAL → acheteurs)
+  {
+    element: <AuthGuard allowedRoles={['DIRECTEUR', 'COMMERCIAL', 'COLLECTEUR']} />,
+    children: [
+      { path: '/clients',          element: <ClientsListPage /> },
+      { path: '/clients/:id',      element: <ClientDetailPage /> },
+      { path: '/clients/:id/edit', element: <ClientFormPage /> },
+    ],
+  },
+
+  // Création + import clients — DIRECTEUR + COMMERCIAL seulement
   {
     element: <AuthGuard allowedRoles={['DIRECTEUR', 'COMMERCIAL']} />,
     children: [
-      { path: '/clients',           element: <ClientsListPage /> },
-      { path: '/clients/nouveau',   element: <ClientFormPage /> },
-      { path: '/clients/import',    element: <ClientImportPage /> },
-      { path: '/clients/:id',       element: <ClientDetailPage /> },
-      { path: '/clients/:id/edit',  element: <ClientFormPage /> },
+      { path: '/clients/nouveau', element: <ClientFormPage /> },
+      { path: '/clients/import',  element: <ClientImportPage /> },
+    ],
+  },
+
+  // Routes commandes — DIRECTEUR + COMMERCIAL
+  {
+    element: <AuthGuard allowedRoles={['DIRECTEUR', 'COMMERCIAL']} />,
+    children: [
       { path: '/commandes',         element: <CommandesListPage /> },
       { path: '/commandes/nouveau', element: <CommandeNewPage /> },
       { path: '/commandes/:id',     element: <CommandeDetailPage /> },
     ],
   },
 
-  // Routes protégées — DIRECTEUR + COLLECTEUR
+  // Routes collectes — DIRECTEUR + COLLECTEUR
   {
     element: <AuthGuard allowedRoles={['DIRECTEUR', 'COLLECTEUR']} />,
     children: [
@@ -52,13 +67,13 @@ const router = createBrowserRouter([
     ],
   },
 
-  // Routes protégées — DIRECTEUR seulement
+  // Routes DIRECTEUR seulement
   {
     element: <AuthGuard allowedRoles={['DIRECTEUR']} />,
     children: [
-      { path: '/factures',      element: <FacturesListPage /> },
-      { path: '/factures/:id',  element: <FactureDetailPage /> },
-      { path: '/audit',         element: <AuditPage /> },
+      { path: '/factures',     element: <FacturesListPage /> },
+      { path: '/factures/:id', element: <FactureDetailPage /> },
+      { path: '/audit',        element: <AuditPage /> },
     ],
   },
 
