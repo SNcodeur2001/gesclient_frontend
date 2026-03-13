@@ -3,6 +3,14 @@ export { DashboardPage } from './features/dashboard/DashboardPage'
 export {ClientsListPage} from './features/clients/ClientsListPage'
 export { ClientFormPage } from './features/clients/ClientFormPage'
 export {ClientDetailPage} from './features/clients/ClientDetailPage'
+export {CommandesListPage} from './features/commandes/CommandeListPage'
+export {CommandeDetailPage} from './features/commandes/Commandedetailpage'
+export {CommandeNewPage} from './features/commandes/Commandenewpage'
+
+
+
+
+
 // Composant générique pour les pages en cours de développement
 function ComingSoon({ title }: { title: string }) {
   return (
@@ -24,9 +32,9 @@ function ComingSoon({ title }: { title: string }) {
 // export const ClientDetailPage   = () => <ComingSoon title="Détail Client" />
 // export const ClientFormPage     = () => <ComingSoon title="Gestion des Clients" />
 export const ClientImportPage   = () => <ComingSoon title="Importer des Clients" />
-export const CommandesListPage  = () => <ComingSoon title="Liste des Commandes" />
-export const CommandeDetailPage = () => <ComingSoon title="Détail Commande" />
-export const CommandeNewPage    = () => <ComingSoon title="Nouvelle Commande" />
+// export const CommandesListPage  = () => <ComingSoon title="Liste des Commandes" />
+// export const CommandeDetailPage = () => <ComingSoon title="Détail Commande" />
+// export const CommandeNewPage    = () => <ComingSoon title="Nouvelle Commande" />
 export const CollectesListPage  = () => <ComingSoon title="Liste des Collectes" />
 export const CollecteDetailPage = () => <ComingSoon title="Détail de la Collecte" />
 export const CollecteNewPage    = () => <ComingSoon title="Nouvelle Collecte" />
