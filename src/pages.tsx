@@ -9,6 +9,7 @@ export {CommandeNewPage} from './features/commandes/Commandenewpage'
 export { CollectesListPage } from './features/collectes/CollecteListPage'
 export { CollecteDetailPage } from './features/collectes/CollecteDetailPage'
 export { CollecteNewPage } from './features/collectes/CollecteNewPage'
+export { FacturesListPage } from './features/factures/FactureListPage'
 
 
 
@@ -40,7 +41,7 @@ export const ClientImportPage   = () => <ComingSoon title="Importer des Clients"
 // export const CollectesListPage  = () => <ComingSoon title="Liste des Collectes" />
 // export const CollecteDetailPage = () => <ComingSoon title="Détail de la Collecte" />
 // export const CollecteNewPage    = () => <ComingSoon title="Nouvelle Collecte" />
-export const FacturesListPage   = () => <ComingSoon title="Liste des Factures" />
+// export const FacturesListPage   = () => <ComingSoon title="Liste des Factures" />
 export const FactureDetailPage  = () => <ComingSoon title="Aperçu Facture" />
 export const NotificationsPage  = () => <ComingSoon title="Notifications" />
 export const AuditPage          = () => <ComingSoon title="Audit Trail" />

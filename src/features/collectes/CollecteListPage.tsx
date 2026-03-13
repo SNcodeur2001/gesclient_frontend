@@ -70,7 +70,7 @@ export function CollectesListPage() {
   const searchRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   const [params, setParams] = useState<CollecteListParams>({
-    page: 1, limit: 10, search: '',
+    page: 1, limit: 6, search: '',
   })
   const [searchVal, setSearchVal] = useState('')
 

@@ -304,6 +304,9 @@ export interface FactureResponse {
   envoyeeWhatsApp: boolean
   dateEnvoiWhatsApp?: string
   telephoneEnvoye?: string
+  fichierPath?: string | null
+  downloadToken?: string | null
+  downloadTokenExpiresAt?: string | null
   genereParId: string
   generePar: {
     id: string
@@ -312,6 +315,7 @@ export interface FactureResponse {
   }
   createdAt: string
   updatedAt: string
+  commande?: CommandeEmbedded
 }
 
 export interface FactureListResponse {
@@ -321,6 +325,40 @@ export interface FactureListResponse {
     limit: number
     total: number
     totalPages: number
+  }
+}
+
+export interface CommandeEmbedded {
+  id: string
+  reference: string
+  type: CommandeType
+  statut: CommandeStatut
+  acheteurId: string
+  produit?: string
+  quantite?: number
+  prixUnitaire?: number
+  montantHT: number
+  tva: number
+  montantTTC: number
+  acompteMinimum: number | null
+  acompteVerse: number
+  soldeRestant: number
+  commercialId: string
+  createdAt: string
+  updatedAt: string
+  acheteur: {
+    id: string
+    nom: string
+    prenom?: string | null
+    email?: string | null
+    telephone?: string | null
+    adresse?: string | null
+    type?: ClientType
+    statut?: ClientStatut
+    totalRevenue?: number
+    notes?: string | null
+    assignedUserId?: string | null
+    deletedAt?: string | null
   }
 }
 
