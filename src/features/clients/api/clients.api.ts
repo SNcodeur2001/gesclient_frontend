@@ -4,6 +4,7 @@ import type {
   CreateClientDto,
   UpdateClientDto,
   ClientListParams,
+  ImportClientsResult,
 } from '../../../types'
 
 export async function fetchClients(params: ClientListParams) {
@@ -45,11 +46,26 @@ export async function exportClientsCSV(params?: Partial<ClientListParams>) {
   return response.data as Blob
 }
 
+export async function exportClientsExcel(params?: Partial<ClientListParams>) {
+  const response = await api.get('/clients/export/excel', {
+    params,
+    responseType: 'blob',
+  })
+  return response.data as Blob
+}
+
+export async function downloadClientsTemplate() {
+  const response = await api.get('/clients/template', {
+    responseType: 'blob',
+  })
+  return response.data as Blob
+}
+
 export async function importClients(file: File) {
   const formData = new FormData()
   formData.append('file', file)
   const { data } = await api.post('/clients/import', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   })
-  return data?.data ?? data
+  return (data?.data ?? data) as ImportClientsResult
 }

@@ -8,7 +8,7 @@ import { useToastStore } from '../../store/toastStore'
 import type { ClientListParams, ClientType, ClientStatut } from '../../types'
 import {
   Search, Plus, Download, Pencil, Trash2, TrendingUp,
-  ChevronLeft, ChevronRight, Eye,
+  ChevronLeft, ChevronRight, Eye, Upload, X,
 } from 'lucide-react'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -135,6 +135,7 @@ export function ClientsListPage() {
   const navigate = useNavigate()
   const { user } = useAuthStore()
   const isDirecteur = user?.role === 'DIRECTEUR'
+  const canImport = user?.role === 'DIRECTEUR' || user?.role === 'COMMERCIAL' || user?.role === 'COLLECTEUR'
   const addToast = useToastStore((state) => state.addToast)
 
   // Filtre type forcé selon le rôle
@@ -152,6 +153,8 @@ export function ClientsListPage() {
   })
   const [search, setSearch] = useState('')
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; nom: string } | null>(null)
+  const [showExport, setShowExport] = useState(false)
+  const [exportFormat, setExportFormat] = useState<'csv' | 'excel'>('csv')
 
   const { data, isLoading } = useClients(params)
   const deleteMutation = useDeleteClient()
@@ -200,8 +203,9 @@ export function ClientsListPage() {
   }
 
   const handleExport = () => {
-    exportMutation.mutate({ type: params.type, statut: params.statut })
+    exportMutation.mutate({ format: exportFormat, params: { type: params.type, statut: params.statut } })
     addToast('Export en cours de préparation...', 'info')
+    setShowExport(false)
   }
 
   return (
@@ -291,13 +295,22 @@ export function ClientsListPage() {
 
           {/* Export */}
           <button
-            onClick={handleExport}
-            disabled={exportMutation.isPending}
-            className="flex items-center gap-2 px-4 py-2 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 transition-colors text-sm font-medium disabled:opacity-50 ml-auto"
+            onClick={() => setShowExport(true)}
+            className="flex items-center gap-2 px-4 py-2 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 transition-colors text-sm font-medium ml-auto"
           >
             <Download size={16} />
-            {exportMutation.isPending ? 'Export...' : 'Exporter'}
+            Exporter
           </button>
+
+          {canImport && (
+            <button
+              onClick={() => navigate('/clients/import')}
+              className="flex items-center gap-2 px-4 py-2 border border-[#2563EB] text-[#2563EB] rounded-lg hover:bg-blue-50 transition-colors text-sm font-semibold"
+            >
+              <Upload size={16} />
+              Importer
+            </button>
+          )}
 
           {/* Ajouter */}
           <button
@@ -421,6 +434,161 @@ export function ClientsListPage() {
           onCancel={() => setDeleteTarget(null)}
           loading={deleteMutation.isPending}
         />
+      )}
+
+      {showExport && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setShowExport(false)} />
+          <div className="relative bg-white w-full max-w-xl rounded-xl shadow-2xl overflow-hidden">
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-[#2563EB]">
+                  <Download size={18} />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900">Exporter les clients</h3>
+              </div>
+              <button
+                onClick={() => setShowExport(false)}
+                className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+              <section className="space-y-3">
+                <h4 className="text-sm font-semibold text-slate-900 uppercase tracking-tight">Format d&apos;export</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <label className={`relative flex flex-col p-4 border-2 rounded-xl cursor-pointer ${
+                    exportFormat === 'csv' ? 'border-[#2563EB] bg-blue-50/60' : 'border-slate-200 hover:border-slate-300'
+                  }`}
+                  >
+                    <input
+                      className="sr-only"
+                      type="radio"
+                      name="format"
+                      value="csv"
+                      checked={exportFormat === 'csv'}
+                      onChange={() => setExportFormat('csv')}
+                    />
+                    <span className="text-lg font-bold text-slate-900">📄 CSV</span>
+                    <span className="text-xs text-slate-500 mt-1">Compatible avec tous les tableurs</span>
+                    {exportFormat === 'csv' && (
+                      <span className="absolute top-4 right-4 text-[#2563EB]">●</span>
+                    )}
+                  </label>
+                  <label className={`relative flex flex-col p-4 border-2 rounded-xl cursor-pointer ${
+                    exportFormat === 'excel' ? 'border-[#2563EB] bg-blue-50/60' : 'border-slate-200 hover:border-slate-300'
+                  }`}
+                  >
+                    <input
+                      className="sr-only"
+                      type="radio"
+                      name="format"
+                      value="excel"
+                      checked={exportFormat === 'excel'}
+                      onChange={() => setExportFormat('excel')}
+                    />
+                    <span className="text-lg font-bold text-slate-900">📊 Excel (.xlsx)</span>
+                    <span className="text-xs text-slate-500 mt-1">Format Microsoft Excel natif</span>
+                    {exportFormat === 'excel' && (
+                      <span className="absolute top-4 right-4 text-[#2563EB]">●</span>
+                    )}
+                  </label>
+                </div>
+              </section>
+
+              <section className="space-y-3">
+                <div>
+                  <h4 className="text-sm font-semibold text-slate-900 uppercase tracking-tight">
+                    Filtres appliqués à l&apos;export
+                  </h4>
+                  <p className="text-xs text-slate-400 mt-1">
+                    Seuls les clients correspondant aux filtres seront exportés.
+                  </p>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-slate-600">Type</label>
+                    <select
+                      value={params.type ?? ''}
+                      onChange={(e) => handleTypeFilter(e.target.value)}
+                      className="w-full bg-slate-50 border-slate-200 rounded-lg text-sm focus:ring-[#2563EB] focus:border-[#2563EB]"
+                    >
+                      <option value="">Tous</option>
+                      <option value="APPORTEUR">APPORTEUR</option>
+                      <option value="ACHETEUR">ACHETEUR</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-slate-600">Statut</label>
+                    <select
+                      value={params.statut ?? ''}
+                      onChange={(e) => handleStatutFilter(e.target.value)}
+                      className="w-full bg-slate-50 border-slate-200 rounded-lg text-sm focus:ring-[#2563EB] focus:border-[#2563EB]"
+                    >
+                      <option value="">Tous</option>
+                      <option value="ACTIF">ACTIF</option>
+                      <option value="PROSPECT">PROSPECT</option>
+                      <option value="INACTIF">INACTIF</option>
+                    </select>
+                  </div>
+                </div>
+              </section>
+
+              <section className="space-y-3">
+                <h4 className="text-sm font-semibold text-slate-900 uppercase tracking-tight">
+                  Colonnes incluses
+                </h4>
+                <div className="grid grid-cols-2 gap-x-8 gap-y-3">
+                  {[
+                    'Nom',
+                    'Prénom',
+                    'Email',
+                    'Téléphone',
+                    'Adresse',
+                    'Type',
+                    'Statut',
+                    'Revenu total',
+                    'Date de création',
+                    'Notes internes',
+                  ].map((label) => (
+                    <label key={label} className="flex items-center gap-3 text-sm text-slate-700">
+                      <input
+                        type="checkbox"
+                        checked
+                        disabled
+                        className="w-4 h-4 rounded border-slate-300 text-[#2563EB] focus:ring-[#2563EB]"
+                      />
+                      {label}
+                    </label>
+                  ))}
+                </div>
+              </section>
+
+              <p className="text-xs text-slate-400 italic">
+                {data?.total ?? 0} clients seront exportés avec les filtres actuels.
+              </p>
+            </div>
+
+            <div className="p-6 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-3">
+              <button
+                onClick={() => setShowExport(false)}
+                className="px-5 py-2.5 text-sm font-semibold text-slate-600 border border-slate-300 rounded-lg hover:bg-white transition-all"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleExport}
+                disabled={exportMutation.isPending}
+                className="px-5 py-2.5 text-sm font-bold text-white bg-[#2563EB] hover:bg-blue-700 rounded-lg shadow-lg shadow-blue-200/40 flex items-center gap-2 transition-all disabled:opacity-60"
+              >
+                <Download size={16} />
+                Télécharger le fichier
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </PageLayout>
   )

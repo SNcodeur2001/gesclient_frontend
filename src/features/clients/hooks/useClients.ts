@@ -2,7 +2,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   fetchClients, fetchClient,
   createClient, updateClient, deleteClient,
-  exportClientsCSV, importClients,
+  exportClientsCSV, exportClientsExcel, importClients,
+  downloadClientsTemplate,
 } from '../api/clients.api'
 import type { ClientListParams, CreateClientDto, UpdateClientDto } from '../../../types'
 
@@ -70,15 +71,26 @@ export function useDeleteClient() {
 
 export function useExportClients() {
   return useMutation({
-    mutationFn: (params?: Partial<ClientListParams>) => exportClientsCSV(params),
-    onSuccess: (blob) => {
+    mutationFn: ({ format, params }: { format: 'csv' | 'excel'; params?: Partial<ClientListParams> }) => (
+      format === 'excel' ? exportClientsExcel(params) : exportClientsCSV(params)
+    ),
+    onSuccess: (blob, vars) => {
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `clients-${new Date().toISOString().split('T')[0]}.csv`
+      const ext = vars.format === 'excel' ? 'xlsx' : 'csv'
+      a.download = `clients-${new Date().toISOString().split('T')[0]}.${ext}`
       a.click()
       URL.revokeObjectURL(url)
     },
+  })
+}
+
+// ─── Télécharger le modèle ───────────────────────────────────────────────────
+
+export function useDownloadClientsTemplate() {
+  return useMutation({
+    mutationFn: () => downloadClientsTemplate(),
   })
 }
 

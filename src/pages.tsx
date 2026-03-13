@@ -3,6 +3,7 @@ export { DashboardPage } from './features/dashboard/DashboardPage'
 export {ClientsListPage} from './features/clients/ClientsListPage'
 export { ClientFormPage } from './features/clients/ClientFormPage'
 export {ClientDetailPage} from './features/clients/ClientDetailPage'
+export { ClientImportPage } from './features/clients/ClientImportPage'
 export {CommandesListPage} from './features/commandes/CommandeListPage'
 export {CommandeDetailPage} from './features/commandes/Commandedetailpage'
 export {CommandeNewPage} from './features/commandes/Commandenewpage'
@@ -34,7 +35,6 @@ function ComingSoon({ title }: { title: string }) {
 // export const ClientsListPage    = () => <ComingSoon title="Liste des Clients" />
 // export const ClientDetailPage   = () => <ComingSoon title="Détail Client" />
 // export const ClientFormPage     = () => <ComingSoon title="Gestion des Clients" />
-export const ClientImportPage   = () => <ComingSoon title="Importer des Clients" />
 // export const CommandesListPage  = () => <ComingSoon title="Liste des Commandes" />
 // export const CommandeDetailPage = () => <ComingSoon title="Détail Commande" />
 // export const CommandeNewPage    = () => <ComingSoon title="Nouvelle Commande" />

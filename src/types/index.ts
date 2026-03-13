@@ -133,6 +133,20 @@ export interface ClientListParams {
   statut?: ClientStatut
 }
 
+export interface ImportClientsError {
+  ligne: number
+  raison: string
+}
+
+export interface ImportClientsResult {
+  filename: string
+  totalRows: number
+  validRows: number
+  invalidRows: number
+  errors: ImportClientsError[]
+  statut: string
+}
+
 // ─── Commandes ────────────────────────────────────────────────────────────────
 
 export interface CommandeItemDto {

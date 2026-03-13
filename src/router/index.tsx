@@ -38,9 +38,9 @@ const router = createBrowserRouter([
     ],
   },
 
-  // Création + import clients — DIRECTEUR + COMMERCIAL seulement
+  // Création + import clients — DIRECTEUR + COMMERCIAL (+ COLLECTEUR pour l'import)
   {
-    element: <AuthGuard allowedRoles={['DIRECTEUR', 'COMMERCIAL']} />,
+    element: <AuthGuard allowedRoles={['DIRECTEUR', 'COMMERCIAL', 'COLLECTEUR']} />,
     children: [
       { path: '/clients/nouveau', element: <ClientFormPage /> },
       { path: '/clients/import',  element: <ClientImportPage /> },
