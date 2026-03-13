@@ -6,7 +6,9 @@ export {ClientDetailPage} from './features/clients/ClientDetailPage'
 export {CommandesListPage} from './features/commandes/CommandeListPage'
 export {CommandeDetailPage} from './features/commandes/Commandedetailpage'
 export {CommandeNewPage} from './features/commandes/Commandenewpage'
-
+export { CollectesListPage } from './features/collectes/CollecteListPage'
+export { CollecteDetailPage } from './features/collectes/CollecteDetailPage'
+export { CollecteNewPage } from './features/collectes/CollecteNewPage'
 
 
 
@@ -35,9 +37,9 @@ export const ClientImportPage   = () => <ComingSoon title="Importer des Clients"
 // export const CommandesListPage  = () => <ComingSoon title="Liste des Commandes" />
 // export const CommandeDetailPage = () => <ComingSoon title="Détail Commande" />
 // export const CommandeNewPage    = () => <ComingSoon title="Nouvelle Commande" />
-export const CollectesListPage  = () => <ComingSoon title="Liste des Collectes" />
-export const CollecteDetailPage = () => <ComingSoon title="Détail de la Collecte" />
-export const CollecteNewPage    = () => <ComingSoon title="Nouvelle Collecte" />
+// export const CollectesListPage  = () => <ComingSoon title="Liste des Collectes" />
+// export const CollecteDetailPage = () => <ComingSoon title="Détail de la Collecte" />
+// export const CollecteNewPage    = () => <ComingSoon title="Nouvelle Collecte" />
 export const FacturesListPage   = () => <ComingSoon title="Liste des Factures" />
 export const FactureDetailPage  = () => <ComingSoon title="Aperçu Facture" />
 export const NotificationsPage  = () => <ComingSoon title="Notifications" />

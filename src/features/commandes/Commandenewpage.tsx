@@ -34,7 +34,7 @@ function newRow(): ItemRow {
 // ─── Type Card ────────────────────────────────────────────────────────────────
 
 function TypeCard({
-  selected, type, icon, title, subtitle, badge, onClick,
+  selected, icon, title, subtitle, badge, onClick,
 }: {
   selected: boolean; type: CommandeType
   icon: React.ReactNode; title: string; subtitle: string

@@ -260,6 +260,8 @@ export interface CreateCollecteDto {
 
 export interface CollecteResponseDto {
   id: string
+  reference?: string
+  typePlastique?: string
   apporteurId: string
   apporteur: {
     id: string
