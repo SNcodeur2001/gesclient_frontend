@@ -1,5 +1,7 @@
 import axios, { type InternalAxiosRequestConfig } from 'axios'
 import { useAuthStore } from '../store/authStore'
+import { useToastStore } from '../store/toastStore'
+import { getApiErrorMessage } from './apiError'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1',
@@ -37,10 +39,15 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & {
       _retry?: boolean
+      silent?: boolean
     }
 
     // Si ce n'est pas un 401 ou si la requête a déjà été retentée → on rejette
     if (error.response?.status !== 401 || originalRequest._retry) {
+      if (!originalRequest?.silent && error.response?.status !== 401) {
+        const message = getApiErrorMessage(error)
+        useToastStore.getState().addToast(message, 'error')
+      }
       return Promise.reject(error)
     }
 
@@ -61,6 +68,9 @@ api.interceptors.response.use(
 
     if (!refreshToken) {
       logout()
+      if (!originalRequest?.silent) {
+        useToastStore.getState().addToast('Session expirée. Veuillez vous reconnecter.', 'error')
+      }
       return Promise.reject(error)
     }
 
@@ -79,6 +89,10 @@ api.interceptors.response.use(
     } catch (refreshError) {
       processQueue(refreshError, null)
       logout()
+      if (!originalRequest?.silent) {
+        const message = getApiErrorMessage(refreshError, 'Session expirée. Veuillez vous reconnecter.')
+        useToastStore.getState().addToast(message, 'error')
+      }
       return Promise.reject(refreshError)
     } finally {
       isRefreshing = false

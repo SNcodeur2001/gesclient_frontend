@@ -4,6 +4,7 @@ import { PageLayout } from '../../components/layout/PageLayout'
 import { useCreateCollecte } from './hooks/usecollectes'
 import { useClients } from '../clients/hooks/useClients'
 import type { ClientResponseDto } from '../../types'
+import { useAuthStore } from '../../store/authStore'
 import {
   Search, UserPlus, Plus, Trash2,
   Save, X, RefreshCw, User,
@@ -47,8 +48,20 @@ function fmt(n: number) {
 
 export function CollecteNewPage() {
   const navigate = useNavigate()
+  const { user } = useAuthStore()
+  const isDirecteur = user?.role === 'DIRECTEUR'
   const createMutation = useCreateCollecte()
   const searchRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+
+  if (isDirecteur) {
+    return (
+      <PageLayout title="Nouvelle Collecte">
+        <div className="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-500">
+          Cette action n&apos;est pas disponible pour le rôle Directeur.
+        </div>
+      </PageLayout>
+    )
+  }
 
   // Apporteur
   const [clientSearch, setClientSearch] = useState('')
@@ -139,7 +152,7 @@ export function CollecteNewPage() {
         <div className="flex-1 space-y-6 min-w-0">
 
           {/* Section 1 — Apporteur */}
-          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+          <div className="bg-white border border-slate-200 rounded-xl overflow-visible shadow-sm">
             <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
               <User size={16} className="text-[#2563EB]" />
               <h3 className="font-semibold text-slate-800">Informations Apporteur</h3>
@@ -187,7 +200,7 @@ export function CollecteNewPage() {
 
                   {/* Dropdown */}
                   {showDropdown && clientsData && clientsData.items.length > 0 && (
-                    <div className="absolute top-full mt-1 left-0 right-0 bg-white border border-slate-200 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
+                    <div className="absolute top-full mt-1 left-0 right-0 bg-white border border-slate-200 rounded-lg shadow-xl z-20 max-h-56 overflow-y-auto">
                       {clientsData.items.map(c => (
                         <button
                           key={c.id}

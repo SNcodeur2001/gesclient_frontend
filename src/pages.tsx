@@ -9,6 +9,10 @@ export {CommandeDetailPage} from './features/commandes/Commandedetailpage'
 export {CommandeNewPage} from './features/commandes/Commandenewpage'
 export { CollectesListPage } from './features/collectes/CollecteListPage'
 export { CollecteDetailPage } from './features/collectes/CollecteDetailPage'
+export { FactureDetailPage } from './features/factures/FactureDetailPage'
+export { NotificationsPage } from './features/notifications/NotificationsPage'
+export { NotificationDetailPage } from './features/notifications/NotificationDetailPage'
+export { AuditPage } from './features/audit/AuditPage'
 export { CollecteNewPage } from './features/collectes/CollecteNewPage'
 export { FacturesListPage } from './features/factures/FactureListPage'
 
@@ -42,7 +46,4 @@ function ComingSoon({ title }: { title: string }) {
 // export const CollecteDetailPage = () => <ComingSoon title="Détail de la Collecte" />
 // export const CollecteNewPage    = () => <ComingSoon title="Nouvelle Collecte" />
 // export const FacturesListPage   = () => <ComingSoon title="Liste des Factures" />
-export const FactureDetailPage  = () => <ComingSoon title="Aperçu Facture" />
-export const NotificationsPage  = () => <ComingSoon title="Notifications" />
-export const AuditPage          = () => <ComingSoon title="Audit Trail" />
 export const ProfilPage         = () => <ComingSoon title="Mon Profil" />

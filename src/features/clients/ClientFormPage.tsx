@@ -85,6 +85,17 @@ export function ClientFormPage() {
   const isEdit = !!id
   const { user } = useAuthStore()
   const addToast = useToastStore((state) => state.addToast)
+  const isDirecteur = user?.role === 'DIRECTEUR'
+
+  if (isDirecteur) {
+    return (
+      <PageLayout title="Clients">
+        <div className="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-500">
+          Cette action n&apos;est pas disponible pour le rôle Directeur.
+        </div>
+      </PageLayout>
+    )
+  }
 
   // Forcer le type selon le rôle
   const forcedType: ClientType | undefined =

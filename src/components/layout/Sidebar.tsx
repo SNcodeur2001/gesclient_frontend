@@ -29,13 +29,13 @@ const navByRole: Record<Role, NavItem[]> = {
     { label: 'Tableau de bord', path: '/dashboard',    icon: <LayoutDashboard size={18} /> },
     { label: 'Clients',         path: '/clients',       icon: <Users size={18} /> },
     { label: 'Commandes',       path: '/commandes',     icon: <ShoppingCart size={18} /> },
-    { label: 'Notifications',   path: '/notifications', icon: <Bell size={18} /> },
+    { label: 'Factures',        path: '/factures',      icon: <FileText size={18} /> },
+    
   ],
   COLLECTEUR: [
     { label: 'Tableau de bord', path: '/dashboard',    icon: <LayoutDashboard size={18} /> },
     { label: 'Clients',         path: '/clients',       icon: <Users size={18} /> },
     { label: 'Collectes',       path: '/collectes',     icon: <Truck size={18} /> },
-    { label: 'Notifications',   path: '/notifications', icon: <Bell size={18} /> },
   ],
 }
 

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { PageLayout } from '../../components/layout/PageLayout'
 import { Badge } from '../../components/ui/Badge'
 import { useCommandes } from './hooks/useCommandes'
+import { useAuthStore } from '../../store/authStore'
 import type { CommandeListParams } from './api/commandes.api'
 import type { CommandeStatut, CommandeType } from '../../types'
 import {
@@ -96,6 +97,8 @@ function Pagination({
 
 export function CommandesListPage() {
   const navigate = useNavigate()
+  const { user } = useAuthStore()
+  const canCreate = user?.role !== 'DIRECTEUR'
   const searchRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   const [params, setParams] = useState<CommandeListParams>({
@@ -137,13 +140,15 @@ export function CommandesListPage() {
               Gérez vos transactions et suivez l'état des livraisons.
             </p>
           </div>
-          <button
-            onClick={() => navigate('/commandes/nouveau')}
-            className="flex items-center gap-2 bg-[#2563EB] hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-lg transition-colors shadow-sm text-sm"
-          >
-            <Plus size={16} />
-            Nouvelle commande
-          </button>
+          {canCreate && (
+            <button
+              onClick={() => navigate('/commandes/nouveau')}
+              className="flex items-center gap-2 bg-[#2563EB] hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-lg transition-colors shadow-sm text-sm"
+            >
+              <Plus size={16} />
+              Nouvelle commande
+            </button>
+          )}
         </div>
 
         {/* ── Filtres ── */}

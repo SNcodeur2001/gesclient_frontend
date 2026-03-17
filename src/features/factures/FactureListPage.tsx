@@ -1,9 +1,12 @@
 import { useState, useCallback, useRef } from 'react'
 import { PageLayout } from '../../components/layout/PageLayout'
 import { useFactures } from './hooks/useFacture'
-import { downloadFacturePDF } from './api/factures.api'
+import { downloadFacturePDF, sendFactureWhatsApp } from './api/factures.api'
 import type { FactureListParams } from './api/factures.api'
 import type { FactureResponse, FactureType, FactureStatut } from '../../types'
+import { useNavigate } from 'react-router-dom'
+import { useToastStore } from '../../store/toastStore'
+import { getApiErrorMessage } from '../../lib/apiError'
 import {
   Search, Calendar, Download, MessageSquare,
   MoreVertical, FileText, ChevronLeft, ChevronRight,
@@ -84,6 +87,8 @@ function SkeletonRow() {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export function FacturesListPage() {
+  const navigate = useNavigate()
+  const addToast = useToastStore((s) => s.addToast)
   const searchRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   const [params, setParams] = useState<FactureListParams>({
@@ -124,8 +129,30 @@ export function FacturesListPage() {
       a.download = `${facture.numero}.pdf`
       a.click()
       URL.revokeObjectURL(url)
-    } catch {
-      // silently fail — le PDF n'est peut-être pas encore généré
+    } catch (err) {
+      addToast(getApiErrorMessage(err, 'Impossible de télécharger le PDF'), 'error')
+    }
+  }
+
+  const handleWhatsApp = async (facture: FactureResponse) => {
+    const pendingWindow = window.open('about:blank', '_blank')
+    try {
+      const res = await sendFactureWhatsApp(facture.id)
+      const waLink = (res as any)?.waLink ?? (res as any)?.data?.waLink
+      if (waLink) {
+        if (pendingWindow) {
+          pendingWindow.location.assign(waLink)
+        } else {
+          window.location.assign(waLink)
+        }
+        addToast('Lien WhatsApp généré', 'success')
+      } else {
+        if (pendingWindow) pendingWindow.close()
+        addToast('Lien WhatsApp indisponible', 'error')
+      }
+    } catch (err) {
+      if (pendingWindow) pendingWindow.close()
+      addToast(getApiErrorMessage(err, "Échec de l'envoi WhatsApp"), 'error')
     }
   }
 
@@ -243,7 +270,11 @@ export function FacturesListPage() {
                     </tr>
                   )
                   : factures.map((f: FactureResponse) => (
-                    <tr key={f.id} className="hover:bg-slate-50/50 transition-colors">
+                    <tr
+                      key={f.id}
+                      className="hover:bg-slate-50/50 transition-colors cursor-pointer"
+                      onClick={() => navigate(`/factures/${f.id}`)}
+                    >
 
                       {/* Numéro */}
                       <td className="px-6 py-4">
@@ -284,8 +315,15 @@ export function FacturesListPage() {
                       </td>
 
                       {/* Actions */}
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-1 text-slate-400">
+                          <button
+                            onClick={() => navigate(`/factures/${f.id}`)}
+                            title="Voir"
+                            className="p-1.5 hover:text-[#2563EB] transition-colors rounded"
+                          >
+                            <FileText size={16} />
+                          </button>
                           <button
                             onClick={() => handleDownload(f)}
                             title="Télécharger PDF"
@@ -294,6 +332,7 @@ export function FacturesListPage() {
                             <Download size={16} />
                           </button>
                           <button
+                            onClick={() => handleWhatsApp(f)}
                             title="Envoyer WhatsApp"
                             className="p-1.5 hover:text-green-500 transition-colors rounded"
                           >
@@ -361,6 +400,7 @@ export function FacturesListPage() {
                 <ChevronRight size={16} />
               </button>
             </div>
+
           </div>
         </div>
 

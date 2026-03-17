@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { PageLayout } from '../../components/layout/PageLayout'
 import { Badge } from '../../components/ui/Badge'
 import { useClient } from './hooks/useClients'
+import { useAuthStore } from '../../store/authStore'
 import api from '../../lib/axios'
 import type { CommandeResponseDto } from '../../types'
 import {
@@ -96,6 +97,8 @@ export function ClientDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [cmdPage, setCmdPage] = useState(1)
+  const { user } = useAuthStore()
+  const canMutate = user?.role !== 'DIRECTEUR'
 
   const { data: client, isLoading } = useClient(id ?? '')
   const { data: cmdData, isLoading: cmdLoading } = useClientCommandes(id ?? '', cmdPage)
@@ -153,13 +156,15 @@ export function ClientDetailPage() {
                 <ArrowLeft size={16} />
                 Retour à la liste
               </button>
-              <button
-                onClick={() => navigate(`/clients/${id}/edit`)}
-                className="flex items-center gap-2 px-4 py-2 bg-[#2563EB] text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
-              >
-                <Pencil size={15} />
-                Modifier le profil
-              </button>
+              {canMutate && (
+                <button
+                  onClick={() => navigate(`/clients/${id}/edit`)}
+                  className="flex items-center gap-2 px-4 py-2 bg-[#2563EB] text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
+                >
+                  <Pencil size={15} />
+                  Modifier le profil
+                </button>
+              )}
             </div>
           </div>
         </div>

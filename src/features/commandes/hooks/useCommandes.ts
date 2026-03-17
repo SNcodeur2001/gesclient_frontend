@@ -5,6 +5,8 @@ import {
 } from '../api/commandes.api'
 import type { CommandeListParams } from '../api/commandes.api'
 import type { CreateCommandeDto } from '../../../types'
+import { useToastStore } from '../../../store/toastStore'
+import { getApiErrorMessage } from '../../../lib/apiError'
 
 export function useCommandes(params: CommandeListParams) {
   return useQuery({
@@ -26,32 +28,44 @@ export function useCommande(id: string) {
 
 export function useCreateCommande() {
   const queryClient = useQueryClient()
+  const addToast = useToastStore((s) => s.addToast)
   return useMutation({
-    mutationFn: (dto: CreateCommandeDto) => createCommande(dto),
+    mutationFn: (dto: CreateCommandeDto) => createCommande(dto, { silent: true }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['commandes'] })
+    },
+    onError: (err) => {
+      addToast(getApiErrorMessage(err, "Échec de la création de la commande"), 'error')
     },
   })
 }
 
 export function useUpdateCommande() {
   const queryClient = useQueryClient()
+  const addToast = useToastStore((s) => s.addToast)
   return useMutation({
     mutationFn: ({ id, dto }: { id: string; dto: Partial<CreateCommandeDto> }) =>
-      updateCommande(id, dto),
+      updateCommande(id, dto, { silent: true }),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ['commandes'] })
       queryClient.invalidateQueries({ queryKey: ['commandes', id] })
+    },
+    onError: (err) => {
+      addToast(getApiErrorMessage(err, 'Erreur lors de la mise à jour'), 'error')
     },
   })
 }
 
 export function useDeleteCommande() {
   const queryClient = useQueryClient()
+  const addToast = useToastStore((s) => s.addToast)
   return useMutation({
-    mutationFn: (id: string) => deleteCommande(id),
+    mutationFn: (id: string) => deleteCommande(id, { silent: true }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['commandes'] })
+    },
+    onError: (err) => {
+      addToast(getApiErrorMessage(err, 'Erreur lors de la suppression'), 'error')
     },
   })
 }

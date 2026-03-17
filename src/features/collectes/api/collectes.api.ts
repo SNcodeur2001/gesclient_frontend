@@ -40,11 +40,21 @@ export async function fetchCollecte(id: string) {
   return (data?.data ?? data) as CollecteResponseDto
 }
 
-export async function createCollecte(dto: CreateCollecteDto) {
-  const { data } = await api.post('/collectes', dto)
+export async function createCollecte(
+  dto: CreateCollecteDto,
+  options?: { silent?: boolean }
+) {
+  const { data } = await api.post('/collectes', dto, {
+    silent: options?.silent,
+  })
   return (data?.data ?? data) as CollecteResponseDto
 }
 
-export async function deleteCollecte(id: string) {
-  await api.delete(`/collectes/${id}`)
+export async function deleteCollecte(
+  id: string,
+  options?: { silent?: boolean }
+) {
+  await api.delete(`/collectes/${id}`, {
+    silent: options?.silent,
+  })
 }

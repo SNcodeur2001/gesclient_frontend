@@ -1,7 +1,8 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PageLayout } from '../../components/layout/PageLayout'
 import { useCollectes } from './hooks/usecollectes'
+import { useAuthStore } from '../../store/authStore'
 import type { CollecteListParams } from './api/collectes.api'
 import type { CollecteResponseDto, CollecteItemResponse } from '../../types'
 import {
@@ -67,6 +68,8 @@ function SummaryCard({
 
 export function CollectesListPage() {
   const navigate = useNavigate()
+  const { user } = useAuthStore()
+  const canCreate = user?.role !== 'DIRECTEUR'
   const searchRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   const [params, setParams] = useState<CollecteListParams>({
@@ -75,6 +78,23 @@ export function CollectesListPage() {
   const [searchVal, setSearchVal] = useState('')
 
   const { data, isLoading } = useCollectes(params)
+  const filters = {
+    search: params.search,
+    dateDebut: params.dateDebut,
+    dateFin: params.dateFin,
+  }
+  const totalsParams = useMemo(
+    () => ({ ...filters, page: 1, limit: 1 }),
+    [filters.search, filters.dateDebut, filters.dateFin]
+  )
+  const { data: totalsData, isLoading: totalsLoading } = useCollectes(totalsParams)
+
+  const today = new Date().toISOString().split('T')[0]
+  const todayParams = useMemo(
+    () => ({ ...filters, dateDebut: today, dateFin: today, page: 1, limit: 1 }),
+    [filters.search, today]
+  )
+  const { data: todayData, isLoading: todayLoading } = useCollectes(todayParams)
 
   // Recherche debounce
   const handleSearch = useCallback((val: string) => {
@@ -108,13 +128,15 @@ export function CollectesListPage() {
               Consultez et gérez les apports de matières plastiques.
             </p>
           </div>
-          <button
-            onClick={() => navigate('/collectes/nouveau')}
-            className="flex items-center gap-2 bg-[#2563EB] hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors text-sm"
-          >
-            <PlusCircle size={16} />
-            Nouvelle collecte
-          </button>
+          {canCreate && (
+            <button
+              onClick={() => navigate('/collectes/nouveau')}
+              className="flex items-center gap-2 bg-[#2563EB] hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors text-sm"
+            >
+              <PlusCircle size={16} />
+              Nouvelle collecte
+            </button>
+          )}
         </div>
 
         {/* ── Filtres ── */}
@@ -285,24 +307,19 @@ export function CollectesListPage() {
             icon={<Scale size={20} className="text-[#2563EB]" />}
             iconBg="bg-blue-100"
             label="Poids Total Collecté"
-            value={isLoading ? '...' : fmtKg(data?.tonnageTotal ?? 0)}
+            value={(isLoading || totalsLoading) ? '...' : fmtKg(totalsData?.tonnageTotal ?? 0)}
           />
           <SummaryCard
             icon={<Banknote size={20} className="text-green-600" />}
             iconBg="bg-green-100"
             label="Montant Total Versé"
-            value={isLoading ? '...' : fmt(data?.montantTotal ?? 0)}
+            value={(isLoading || totalsLoading) ? '...' : fmt(totalsData?.montantTotal ?? 0)}
           />
           <SummaryCard
             icon={<PlusCircle size={20} className="text-blue-600" />}
             iconBg="bg-blue-100"
             label="Nouvelles Collectes (auj.)"
-            value={isLoading ? '...' : String(
-              data?.items.filter((c: CollecteResponseDto) => {
-                const today = new Date().toDateString()
-                return new Date(c.createdAt).toDateString() === today
-              }).length ?? 0
-            )}
+            value={(isLoading || todayLoading) ? '...' : String(todayData?.total ?? 0)}
           />
         </div>
 

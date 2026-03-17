@@ -37,6 +37,16 @@ export async function fetchFacture(id: string): Promise<FactureResponse> {
 }
 
 export async function downloadFacturePDF(id: string): Promise<Blob> {
-  const { data } = await api.get(`/factures/${id}/pdf`, { responseType: 'blob' })
+  const { data } = await api.get(`/factures/${id}/pdf`, {
+    responseType: 'blob',
+    silent: true,
+  })
   return data as Blob
+}
+
+export async function sendFactureWhatsApp(id: string) {
+  const { data } = await api.post(`/factures/${id}/envoyer-whatsapp`, undefined, {
+    silent: true,
+  })
+  return data
 }

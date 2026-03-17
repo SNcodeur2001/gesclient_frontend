@@ -32,16 +32,32 @@ export async function fetchCommande(id: string) {
   return (data?.data ?? data) as CommandeResponseDto
 }
 
-export async function createCommande(dto: CreateCommandeDto) {
-  const { data } = await api.post('/commandes', dto)
+export async function createCommande(
+  dto: CreateCommandeDto,
+  options?: { silent?: boolean }
+) {
+  const { data } = await api.post('/commandes', dto, {
+    silent: options?.silent,
+  })
   return (data?.data ?? data) as CommandeResponseDto
 }
 
-export async function updateCommande(id: string, dto: Partial<CreateCommandeDto>) {
-  const { data } = await api.patch(`/commandes/${id}`, dto)
+export async function updateCommande(
+  id: string,
+  dto: Partial<CreateCommandeDto>,
+  options?: { silent?: boolean }
+) {
+  const { data } = await api.patch(`/commandes/${id}`, dto, {
+    silent: options?.silent,
+  })
   return (data?.data ?? data) as CommandeResponseDto
 }
 
-export async function deleteCommande(id: string) {
-  await api.delete(`/commandes/${id}`)
+export async function deleteCommande(
+  id: string,
+  options?: { silent?: boolean }
+) {
+  await api.delete(`/commandes/${id}`, {
+    silent: options?.silent,
+  })
 }

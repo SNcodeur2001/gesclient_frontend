@@ -7,7 +7,7 @@ import { useAuthStore } from '../../store/authStore'
 import { useToastStore } from '../../store/toastStore'
 import type { ClientListParams, ClientType, ClientStatut } from '../../types'
 import {
-  Search, Plus, Download, Pencil, Trash2, TrendingUp,
+  Search, Plus, Download, Pencil, TrendingUp,
   ChevronLeft, ChevronRight, Eye, Upload, X,
 } from 'lucide-react'
 
@@ -134,8 +134,8 @@ function DeleteModal({ nom, onConfirm, onCancel, loading }: DeleteModalProps) {
 export function ClientsListPage() {
   const navigate = useNavigate()
   const { user } = useAuthStore()
-  const isDirecteur = user?.role === 'DIRECTEUR'
   const canImport = user?.role === 'DIRECTEUR' || user?.role === 'COMMERCIAL' || user?.role === 'COLLECTEUR'
+  const canMutate = user?.role !== 'DIRECTEUR'
   const addToast = useToastStore((state) => state.addToast)
 
   // Filtre type forcé selon le rôle
@@ -160,14 +160,13 @@ export function ClientsListPage() {
   const deleteMutation = useDeleteClient()
   const exportMutation = useExportClients()
 
-  // Stats calculées depuis la liste
-  const totalActifs = data?.items.filter(c => c.statut === 'ACTIF').length ?? 0
-  // const totalProspects = data?.items.filter(c => c.statut === 'PROSPECT').length ?? 0
+  // Stats globales (indépendantes de la pagination)
+  const totalActifs = data?.totalActifs ?? 0
   const totalClients = data?.total ?? 0
   const tauxConversion = totalClients > 0
     ? Math.round((totalActifs / totalClients) * 100)
     : 0
-  const revenuCumule = data?.items.reduce((s, c) => s + (c.totalRevenue ?? 0), 0) ?? 0
+  const revenuCumule = data?.totalRevenue ?? 0
 
   // Recherche avec debounce simple
   const handleSearch = useCallback((value: string) => {
@@ -302,7 +301,7 @@ export function ClientsListPage() {
             Exporter
           </button>
 
-          {canImport && (
+          {canImport && canMutate && (
             <button
               onClick={() => navigate('/clients/import')}
               className="flex items-center gap-2 px-4 py-2 border border-[#2563EB] text-[#2563EB] rounded-lg hover:bg-blue-50 transition-colors text-sm font-semibold"
@@ -313,13 +312,15 @@ export function ClientsListPage() {
           )}
 
           {/* Ajouter */}
-          <button
-            onClick={() => navigate('/clients/nouveau')}
-            className="bg-[#2563EB] hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-semibold"
-          >
-            <Plus size={16} />
-            Ajouter un client
-          </button>
+          {canMutate && (
+            <button
+              onClick={() => navigate('/clients/nouveau')}
+              className="bg-[#2563EB] hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-semibold"
+            >
+              <Plus size={16} />
+              Ajouter un client
+            </button>
+          )}
         </div>
 
         {/* ── Tableau ── */}
@@ -387,22 +388,16 @@ export function ClientsListPage() {
                           >
                             <Eye size={16} />
                           </button>
-                          <button
-                            onClick={() => navigate(`/clients/${client.id}/edit`)}
-                            className="p-1.5 text-slate-400 hover:text-[#2563EB] transition-colors rounded"
-                            title="Modifier"
-                          >
-                            <Pencil size={16} />
-                          </button>
-                          {isDirecteur && (
+                          {canMutate && (
                             <button
-                              onClick={() => setDeleteTarget({ id: client.id, nom: `${client.nom} ${client.prenom ?? ''}` })}
-                              className="p-1.5 text-slate-400 hover:text-red-500 transition-colors rounded"
-                              title="Supprimer"
+                              onClick={() => navigate(`/clients/${client.id}/edit`)}
+                              className="p-1.5 text-slate-400 hover:text-[#2563EB] transition-colors rounded"
+                              title="Modifier"
                             >
-                              <Trash2 size={16} />
+                              <Pencil size={16} />
                             </button>
                           )}
+                          {/* Suppression masquée pour le directeur */}
                         </div>
                       </td>
                     </tr>

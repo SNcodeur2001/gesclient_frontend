@@ -5,6 +5,8 @@ import {
 } from '../api/collectes.api'
 import type { CollecteListParams } from '../api/collectes.api'
 import type { CreateCollecteDto } from '../../../types'
+import { useToastStore } from '../../../store/toastStore'
+import { getApiErrorMessage } from '../../../lib/apiError'
 
 export function useCollectes(params: CollecteListParams) {
   return useQuery({
@@ -26,20 +28,28 @@ export function useCollecte(id: string) {
 
 export function useCreateCollecte() {
   const queryClient = useQueryClient()
+  const addToast = useToastStore((s) => s.addToast)
   return useMutation({
-    mutationFn: (dto: CreateCollecteDto) => createCollecte(dto),
+    mutationFn: (dto: CreateCollecteDto) => createCollecte(dto, { silent: true }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['collectes'] })
+    },
+    onError: (err) => {
+      addToast(getApiErrorMessage(err, "Échec de l'enregistrement de la collecte"), 'error')
     },
   })
 }
 
 export function useDeleteCollecte() {
   const queryClient = useQueryClient()
+  const addToast = useToastStore((s) => s.addToast)
   return useMutation({
-    mutationFn: (id: string) => deleteCollecte(id),
+    mutationFn: (id: string) => deleteCollecte(id, { silent: true }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['collectes'] })
+    },
+    onError: (err) => {
+      addToast(getApiErrorMessage(err, 'Erreur lors de la suppression'), 'error')
     },
   })
 }

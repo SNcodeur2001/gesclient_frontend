@@ -7,6 +7,7 @@ import { PageLayout } from '../../components/layout/PageLayout'
 import { useImportClients, useDownloadClientsTemplate } from './hooks/useClients'
 import { useToastStore } from '../../store/toastStore'
 import type { ImportClientsResult } from '../../types'
+import { useAuthStore } from '../../store/authStore'
 
 export function ClientImportPage() {
   const navigate = useNavigate()
@@ -15,6 +16,8 @@ export function ClientImportPage() {
   const [isDragging, setIsDragging] = useState(false)
   const [result, setResult] = useState<ImportClientsResult | null>(null)
   const [showErrors, setShowErrors] = useState(false)
+  const { user } = useAuthStore()
+  const isDirecteur = user?.role === 'DIRECTEUR'
 
   const addToast = useToastStore((s) => s.addToast)
   const importMutation = useImportClients()
@@ -59,6 +62,18 @@ export function ClientImportPage() {
     } catch {
       addToast("Impossible de télécharger le modèle", 'error')
     }
+  }
+
+  if (isDirecteur) {
+    return (
+      <PageLayout title="Gestion des Clients">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-500">
+            Cette action n&apos;est pas disponible pour le rôle Directeur.
+          </div>
+        </div>
+      </PageLayout>
+    )
   }
 
   return (

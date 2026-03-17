@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useCommande } from './hooks/useCommandes'
 import { PageLayout } from '../../components/layout/PageLayout'
 import { Badge } from '../../components/ui/Badge'
+import { useAuthStore } from '../../store/authStore'
 import {
   ArrowLeft, MessageCircle, FileText, RefreshCw, Plus,
 } from 'lucide-react'
@@ -187,6 +188,8 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 export function CommandeDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { user } = useAuthStore()
+  const canMutate = user?.role !== 'DIRECTEUR'
   const [showPaiement, setShowPaiement] = useState(false)
   const [showStatut, setShowStatut] = useState(false)
 
@@ -234,24 +237,32 @@ export function CommandeDetailPage() {
 
           {/* Boutons actions */}
           <div className="flex flex-wrap gap-2 lg:justify-end">
-            <button className="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-lg text-slate-600 text-sm font-semibold hover:bg-slate-50 transition-colors">
-              <MessageCircle size={15} /> WhatsApp
-            </button>
-            <button className="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-lg text-slate-600 text-sm font-semibold hover:bg-slate-50 transition-colors">
-              <FileText size={15} /> Facture
-            </button>
-            <button
-              onClick={() => setShowStatut(true)}
-              className="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-lg text-slate-600 text-sm font-semibold hover:bg-slate-50 transition-colors"
-            >
-              <RefreshCw size={15} /> Statut
-            </button>
-            <button
-              onClick={() => setShowPaiement(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-[#2563EB] text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-colors shadow-sm"
-            >
-              <Plus size={15} /> Paiement
-            </button>
+            {canMutate && (
+              <button className="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-lg text-slate-600 text-sm font-semibold hover:bg-slate-50 transition-colors">
+                <MessageCircle size={15} /> WhatsApp
+              </button>
+            )}
+            {canMutate && (
+              <button className="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-lg text-slate-600 text-sm font-semibold hover:bg-slate-50 transition-colors">
+                <FileText size={15} /> Facture
+              </button>
+            )}
+            {canMutate && (
+              <button
+                onClick={() => setShowStatut(true)}
+                className="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-lg text-slate-600 text-sm font-semibold hover:bg-slate-50 transition-colors"
+              >
+                <RefreshCw size={15} /> Statut
+              </button>
+            )}
+            {canMutate && (
+              <button
+                onClick={() => setShowPaiement(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-[#2563EB] text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-colors shadow-sm"
+              >
+                <Plus size={15} /> Paiement
+              </button>
+            )}
           </div>
         </div>
 
@@ -451,13 +462,13 @@ export function CommandeDetailPage() {
       </div>
 
       {/* ── Modals ── */}
-      {showPaiement && (
+      {showPaiement && canMutate && (
         <PaiementModal
           commandeId={id ?? ''}
           onClose={() => setShowPaiement(false)}
         />
       )}
-      {showStatut && (
+      {showStatut && canMutate && (
         <StatutModal
           commandeId={id ?? ''}
           current={cmd.statut}

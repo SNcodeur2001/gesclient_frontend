@@ -7,7 +7,7 @@ import {
   CommandesListPage, CommandeDetailPage, CommandeNewPage,
   CollectesListPage, CollecteDetailPage, CollecteNewPage,
   FacturesListPage, FactureDetailPage,
-  NotificationsPage,
+  NotificationsPage, NotificationDetailPage,
   AuditPage,
   ProfilPage,
 } from '../pages'
@@ -23,6 +23,7 @@ const router = createBrowserRouter([
       { path: '/',              element: <Navigate to="/dashboard" replace /> },
       { path: '/dashboard',     element: <DashboardPage /> },
       { path: '/notifications', element: <NotificationsPage /> },
+      { path: '/notifications/:id', element: <NotificationDetailPage /> },
       { path: '/profil',        element: <ProfilPage /> },
     ],
   },
@@ -69,7 +70,7 @@ const router = createBrowserRouter([
 
   // Routes DIRECTEUR seulement
   {
-    element: <AuthGuard allowedRoles={['DIRECTEUR']} />,
+    element: <AuthGuard allowedRoles={['DIRECTEUR', 'COMMERCIAL']} />,
     children: [
       { path: '/factures',     element: <FacturesListPage /> },
       { path: '/factures/:id', element: <FactureDetailPage /> },

@@ -4,6 +4,7 @@ import { PageLayout } from '../../components/layout/PageLayout'
 import { useCreateCommande } from './hooks/useCommandes'
 import { useClients } from '../clients/hooks/useClients'
 import type { CommandeType } from '../../types'
+import { useAuthStore } from '../../store/authStore'
 import {
   ArrowLeft, Store, Truck, Search,
   BookOpen, UserPlus, ChevronRight, Plus,
@@ -72,7 +73,19 @@ function TypeCard({
 
 export function CommandeNewPage() {
   const navigate = useNavigate()
+  const { user } = useAuthStore()
+  const isDirecteur = user?.role === 'DIRECTEUR'
   const createMutation = useCreateCommande()
+
+  if (isDirecteur) {
+    return (
+      <PageLayout title="Nouvelle Commande">
+        <div className="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-500">
+          Cette action n&apos;est pas disponible pour le rôle Directeur.
+        </div>
+      </PageLayout>
+    )
+  }
 
   // État formulaire
   const [type, setType] = useState<CommandeType>('SUR_PLACE')

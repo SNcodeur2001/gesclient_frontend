@@ -13,6 +13,8 @@ export async function fetchClients(params: ClientListParams) {
   return {
     items: (raw?.items ?? raw?.data ?? []) as ClientResponseDto[],
     total: raw?.total ?? 0,
+    totalActifs: raw?.totalActifs ?? 0,
+    totalRevenue: raw?.totalRevenue ?? 0,
     page: raw?.page ?? 1,
     limit: raw?.limit ?? 10,
     totalPages: raw?.totalPages ?? 1,

@@ -351,6 +351,7 @@ export interface CommandeEmbedded {
   produit?: string
   quantite?: number
   prixUnitaire?: number
+  items?: CommandeItemResponse[]
   montantHT: number
   tva: number
   montantTTC: number
@@ -403,6 +404,7 @@ export interface AuditLogResponseDto {
   action: AuditAction
   entite: string
   entiteId: string
+  description?: string
   ancienneValeur?: object
   nouvelleValeur?: object
   createdAt: string
