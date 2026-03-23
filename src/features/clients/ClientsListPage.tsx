@@ -4,7 +4,6 @@ import { PageLayout } from '../../components/layout/PageLayout'
 import { Badge } from '../../components/ui/Badge'
 import { useClients, useDeleteClient, useExportClients } from './hooks/useClients'
 import { useAuthStore } from '../../store/authStore'
-import { useToastStore } from '../../store/toastStore'
 import type { ClientListParams, ClientType, ClientStatut } from '../../types'
 import {
   Search, Plus, Download, Pencil, TrendingUp,
@@ -136,7 +135,6 @@ export function ClientsListPage() {
   const { user } = useAuthStore()
   const canImport = user?.role === 'DIRECTEUR' || user?.role === 'COMMERCIAL' || user?.role === 'COLLECTEUR'
   const canMutate = user?.role !== 'DIRECTEUR'
-  const addToast = useToastStore((state) => state.addToast)
 
   // Filtre type forcé selon le rôle
   const forcedType: ClientType | undefined =
@@ -194,16 +192,12 @@ export function ClientsListPage() {
     if (!deleteTarget) return
     try {
       await deleteMutation.mutateAsync(deleteTarget.id)
-      addToast('Client supprimé avec succès', 'success')
       setDeleteTarget(null)
-    } catch (error) {
-      addToast('Erreur lors de la suppression', 'error')
-    }
+    } catch {}
   }
 
   const handleExport = () => {
     exportMutation.mutate({ format: exportFormat, params: { type: params.type, statut: params.statut } })
-    addToast('Export en cours de préparation...', 'info')
     setShowExport(false)
   }
 

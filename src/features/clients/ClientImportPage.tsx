@@ -5,7 +5,6 @@ import {
 } from 'lucide-react'
 import { PageLayout } from '../../components/layout/PageLayout'
 import { useImportClients, useDownloadClientsTemplate } from './hooks/useClients'
-import { useToastStore } from '../../store/toastStore'
 import type { ImportClientsResult } from '../../types'
 import { useAuthStore } from '../../store/authStore'
 
@@ -19,7 +18,6 @@ export function ClientImportPage() {
   const { user } = useAuthStore()
   const isDirecteur = user?.role === 'DIRECTEUR'
 
-  const addToast = useToastStore((s) => s.addToast)
   const importMutation = useImportClients()
   const templateMutation = useDownloadClientsTemplate()
 
@@ -41,12 +39,9 @@ export function ClientImportPage() {
     if (!file || importMutation.isPending) return
     try {
       const res = await importMutation.mutateAsync(file)
-      addToast('Importation lancée avec succès', 'success')
       setResult(res)
       setFile(null)
-    } catch {
-      addToast("Échec de l'importation", 'error')
-    }
+    } catch {}
   }
 
   const handleDownloadTemplate = async () => {
@@ -58,10 +53,7 @@ export function ClientImportPage() {
       a.download = 'clients-template.xlsx'
       a.click()
       URL.revokeObjectURL(url)
-      addToast('Modèle téléchargé', 'success')
-    } catch {
-      addToast("Impossible de télécharger le modèle", 'error')
-    }
+    } catch {}
   }
 
   if (isDirecteur) {

@@ -2,7 +2,6 @@ import { useEffect, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { PageLayout } from '../../components/layout/PageLayout'
 import { useNotifications, useMarkNotificationRead } from './hooks/useNotifications'
-import { useToastStore } from '../../store/toastStore'
 import type { NotificationType } from '../../types'
 import {
   ArrowLeft, Bell, Package, CreditCard,
@@ -52,7 +51,6 @@ function formatDateLong(iso: string) {
 export function NotificationDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const addToast = useToastStore((s) => s.addToast)
   const { data = [], isLoading } = useNotifications()
   const markRead = useMarkNotificationRead()
 
@@ -156,10 +154,7 @@ export function NotificationDetailPage() {
                 onClick={async () => {
                   try {
                     await markRead.mutateAsync(notif.id)
-                    addToast('Notification marquée comme lue', 'success')
-                  } catch {
-                    addToast('Erreur lors du marquage', 'error')
-                  }
+                  } catch {}
                 }}
                 className="px-4 py-2 bg-[#2563EB] text-white rounded-lg text-sm font-semibold hover:bg-blue-700"
               >

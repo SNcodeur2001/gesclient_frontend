@@ -6,7 +6,6 @@ import {
   useMarkAllNotificationsRead,
   useMarkNotificationRead,
 } from './hooks/useNotifications'
-import { useToastStore } from '../../store/toastStore'
 import type { NotificationResponseDto, NotificationType } from '../../types'
 import {
   Bell, Check, Package, CreditCard,
@@ -61,7 +60,6 @@ function timeAgo(iso: string) {
 
 export function NotificationsPage() {
   const navigate = useNavigate()
-  const addToast = useToastStore((s) => s.addToast)
   const [tab, setTab] = useState<'all' | 'unread' | 'read'>('all')
 
   const { data: all = [], isLoading } = useNotifications()
@@ -79,10 +77,7 @@ export function NotificationsPage() {
   const handleMarkAll = async () => {
     try {
       await markAll.mutateAsync()
-      addToast('Toutes les notifications sont marquées comme lues', 'success')
-    } catch {
-      addToast('Erreur lors du marquage', 'error')
-    }
+    } catch {}
   }
 
   const handleOpen = async (n: NotificationResponseDto) => {

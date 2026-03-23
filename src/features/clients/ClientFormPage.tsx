@@ -3,7 +3,6 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { PageLayout } from '../../components/layout/PageLayout'
 import { useAuthStore } from '../../store/authStore'
-import { useToastStore } from '../../store/toastStore'
 import { useClient, useCreateClient, useUpdateClient } from './hooks/useClients'
 import type { CreateClientDto, ClientType } from '../../types'
 import { ArrowLeft, Info, UserPlus, Save } from 'lucide-react'
@@ -84,7 +83,6 @@ export function ClientFormPage() {
   const { id } = useParams<{ id: string }>()
   const isEdit = !!id
   const { user } = useAuthStore()
-  const addToast = useToastStore((state) => state.addToast)
   const isDirecteur = user?.role === 'DIRECTEUR'
 
   if (isDirecteur) {
@@ -155,10 +153,8 @@ export function ClientFormPage() {
 
     if (isEdit && id) {
       await updateMutation.mutateAsync({ id, dto })
-      addToast('Client mis à jour avec succès', 'success')
     } else {
       await createMutation.mutateAsync(dto)
-      addToast('Client créé avec succès', 'success')
     }
 
     navigate('/clients')

@@ -33,6 +33,7 @@ export function useCreateCommande() {
     mutationFn: (dto: CreateCommandeDto) => createCommande(dto, { silent: true }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['commandes'] })
+      addToast('Commande créée avec succès', 'success')
     },
     onError: (err) => {
       addToast(getApiErrorMessage(err, "Échec de la création de la commande"), 'error')
@@ -49,6 +50,7 @@ export function useUpdateCommande() {
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ['commandes'] })
       queryClient.invalidateQueries({ queryKey: ['commandes', id] })
+      addToast('Commande mise à jour avec succès', 'success')
     },
     onError: (err) => {
       addToast(getApiErrorMessage(err, 'Erreur lors de la mise à jour'), 'error')
@@ -63,6 +65,7 @@ export function useDeleteCommande() {
     mutationFn: (id: string) => deleteCommande(id, { silent: true }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['commandes'] })
+      addToast('Commande supprimée avec succès', 'success')
     },
     onError: (err) => {
       addToast(getApiErrorMessage(err, 'Erreur lors de la suppression'), 'error')

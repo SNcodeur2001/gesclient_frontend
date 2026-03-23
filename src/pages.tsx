@@ -16,10 +16,7 @@ export { AuditPage } from './features/audit/AuditPage'
 export { CollecteNewPage } from './features/collectes/CollecteNewPage'
 export { FacturesListPage } from './features/factures/FactureListPage'
 
-
-
-
-// Composant générique pour les pages en cours de développement
+// Page en cours de développement
 function ComingSoon({ title }: { title: string }) {
   return (
     <PageLayout title={title}>
@@ -36,6 +33,8 @@ function ComingSoon({ title }: { title: string }) {
   )
 }
 
+export const ProfilPage = () => <ComingSoon title="Mon Profil" />
+
 // export const ClientsListPage    = () => <ComingSoon title="Liste des Clients" />
 // export const ClientDetailPage   = () => <ComingSoon title="Détail Client" />
 // export const ClientFormPage     = () => <ComingSoon title="Gestion des Clients" />
@@ -46,4 +45,3 @@ function ComingSoon({ title }: { title: string }) {
 // export const CollecteDetailPage = () => <ComingSoon title="Détail de la Collecte" />
 // export const CollecteNewPage    = () => <ComingSoon title="Nouvelle Collecte" />
 // export const FacturesListPage   = () => <ComingSoon title="Liste des Factures" />
-export const ProfilPage         = () => <ComingSoon title="Mon Profil" />

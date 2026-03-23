@@ -33,6 +33,7 @@ export function useCreateCollecte() {
     mutationFn: (dto: CreateCollecteDto) => createCollecte(dto, { silent: true }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['collectes'] })
+      addToast('Collecte enregistrée avec succès', 'success')
     },
     onError: (err) => {
       addToast(getApiErrorMessage(err, "Échec de l'enregistrement de la collecte"), 'error')
@@ -47,6 +48,7 @@ export function useDeleteCollecte() {
     mutationFn: (id: string) => deleteCollecte(id, { silent: true }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['collectes'] })
+      addToast('Collecte supprimée avec succès', 'success')
     },
     onError: (err) => {
       addToast(getApiErrorMessage(err, 'Erreur lors de la suppression'), 'error')
