@@ -17,7 +17,11 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
-import type { TooltipProps } from "recharts";
+type ChartTooltipProps = {
+  active?: boolean;
+  payload?: Array<{ value?: number | string }>;
+  label?: string;
+};
 import {
   Users,
   ShoppingCart,
@@ -114,7 +118,7 @@ function KpiCard({ label, value, variation, icon }: KpiCardProps) {
 
 // ─── Custom Tooltip ───────────────────────────────────────────────────────────
 
-function ChartTooltipCA({ active, payload, label }: TooltipProps<number, string>) {
+function ChartTooltipCA({ active, payload, label }: ChartTooltipProps) {
   if (!active || !payload?.length) return null;
   const value = payload[0]?.value;
   const amount = typeof value === "number" ? value : Number(value ?? 0);
@@ -126,7 +130,7 @@ function ChartTooltipCA({ active, payload, label }: TooltipProps<number, string>
   );
 }
 
-function ChartTooltipCollecte({ active, payload, label }: TooltipProps<number, string>) {
+function ChartTooltipCollecte({ active, payload, label }: ChartTooltipProps) {
   if (!active || !payload?.length) return null;
   const value = payload[0]?.value;
   const kg = typeof value === "number" ? value : Number(value ?? 0);

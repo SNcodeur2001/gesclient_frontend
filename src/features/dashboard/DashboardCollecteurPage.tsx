@@ -9,7 +9,11 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip,
   ResponsiveContainer, CartesianGrid,
 } from 'recharts'
-import type { TooltipProps } from 'recharts'
+type ChartTooltipProps = {
+  active?: boolean
+  payload?: Array<{ value?: number | string }>
+  label?: string
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -114,7 +118,7 @@ function SkeletonCard() {
 
 // ─── Custom Tooltip ───────────────────────────────────────────────────────────
 
-function ChartTooltip({ active, payload, label }: TooltipProps<number, string>) {
+function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
   if (!active || !payload?.length) return null
   const value = payload[0]?.value
   const kg = typeof value === 'number' ? value : Number(value ?? 0)
