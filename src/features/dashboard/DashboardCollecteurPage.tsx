@@ -9,6 +9,7 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip,
   ResponsiveContainer, CartesianGrid,
 } from 'recharts'
+import type { TooltipProps } from 'recharts'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -113,12 +114,14 @@ function SkeletonCard() {
 
 // ─── Custom Tooltip ───────────────────────────────────────────────────────────
 
-function ChartTooltip({ active, payload, label }: any) {
+function ChartTooltip({ active, payload, label }: TooltipProps<number, string>) {
   if (!active || !payload?.length) return null
+  const value = payload[0]?.value
+  const kg = typeof value === 'number' ? value : Number(value ?? 0)
   return (
     <div className="bg-slate-800 text-white text-xs py-1.5 px-2.5 rounded shadow">
       <p className="text-slate-300 mb-0.5">{label}</p>
-      <p className="font-bold">{formatKg(payload[0].value)}</p>
+      <p className="font-bold">{formatKg(kg)}</p>
     </div>
   )
 }

@@ -77,16 +77,6 @@ export function CommandeNewPage() {
   const isDirecteur = user?.role === 'DIRECTEUR'
   const createMutation = useCreateCommande()
 
-  if (isDirecteur) {
-    return (
-      <PageLayout title="Nouvelle Commande">
-        <div className="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-500">
-          Cette action n&apos;est pas disponible pour le rôle Directeur.
-        </div>
-      </PageLayout>
-    )
-  }
-
   // État formulaire
   const [type, setType] = useState<CommandeType>('SUR_PLACE')
   const [clientSearch, setClientSearch] = useState('')
@@ -100,7 +90,6 @@ export function CommandeNewPage() {
     search: clientSearch,
     type: 'ACHETEUR',
   })
-
   // Calculs résumé
   const sousTotal = useMemo(() => {
     return items.reduce((sum, row) => {
@@ -109,6 +98,16 @@ export function CommandeNewPage() {
       return sum + kg * pu
     }, 0)
   }, [items])
+
+  if (isDirecteur) {
+    return (
+      <PageLayout title="Nouvelle Commande">
+        <div className="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-500">
+          Cette action n&apos;est pas disponible pour le rôle Directeur.
+        </div>
+      </PageLayout>
+    )
+  }
 
   const tva = type === 'A_DISTANCE' ? 0.2 : 0
   const tvaAmount = Math.round(sousTotal * tva)

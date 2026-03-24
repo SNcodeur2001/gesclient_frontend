@@ -53,16 +53,6 @@ export function CollecteNewPage() {
   const createMutation = useCreateCollecte()
   const searchRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
-  if (isDirecteur) {
-    return (
-      <PageLayout title="Nouvelle Collecte">
-        <div className="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-500">
-          Cette action n&apos;est pas disponible pour le rôle Directeur.
-        </div>
-      </PageLayout>
-    )
-  }
-
   // Apporteur
   const [clientSearch, setClientSearch] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
@@ -81,7 +71,6 @@ export function CollecteNewPage() {
     search: searchQuery,
     type: 'APPORTEUR',
   })
-
   const handleSearch = useCallback((val: string) => {
     setClientSearch(val)
     clearTimeout(searchRef.current)
@@ -90,6 +79,16 @@ export function CollecteNewPage() {
       setShowDropdown(true)
     }, 400)
   }, [])
+
+  if (isDirecteur) {
+    return (
+      <PageLayout title="Nouvelle Collecte">
+        <div className="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-500">
+          Cette action n&apos;est pas disponible pour le rôle Directeur.
+        </div>
+      </PageLayout>
+    )
+  }
 
   // Gestion items
   const addItem = () => setItems(prev => [...prev, newRow()])

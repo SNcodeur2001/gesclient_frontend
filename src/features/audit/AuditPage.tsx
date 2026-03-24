@@ -46,7 +46,7 @@ export function AuditPage() {
 
   const { data, isLoading } = useAuditLogs(params)
 
-  const items = data?.items ?? []
+  const items = useMemo(() => data?.items ?? [], [data?.items])
   const total = data?.total ?? 0
   const totalPages = data?.totalPages ?? 1
 

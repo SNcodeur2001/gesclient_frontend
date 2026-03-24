@@ -84,6 +84,13 @@ function SkeletonRow() {
   )
 }
 
+type WhatsAppResponse = {
+  waLink?: string
+  data?: {
+    waLink?: string
+  }
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export function FacturesListPage() {
@@ -137,8 +144,8 @@ export function FacturesListPage() {
   const handleWhatsApp = async (facture: FactureResponse) => {
     const pendingWindow = window.open('about:blank', '_blank')
     try {
-      const res = await sendFactureWhatsApp(facture.id)
-      const waLink = (res as any)?.waLink ?? (res as any)?.data?.waLink
+      const res = await sendFactureWhatsApp(facture.id) as WhatsAppResponse
+      const waLink = res?.waLink ?? res?.data?.waLink
       if (waLink) {
         if (pendingWindow) {
           pendingWindow.location.assign(waLink)

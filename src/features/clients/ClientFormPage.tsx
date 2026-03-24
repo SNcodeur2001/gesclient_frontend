@@ -85,23 +85,14 @@ export function ClientFormPage() {
   const { user } = useAuthStore()
   const isDirecteur = user?.role === 'DIRECTEUR'
 
-  if (isDirecteur) {
-    return (
-      <PageLayout title="Clients">
-        <div className="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-500">
-          Cette action n&apos;est pas disponible pour le rôle Directeur.
-        </div>
-      </PageLayout>
-    )
-  }
-
   // Forcer le type selon le rôle
   const forcedType: ClientType | undefined =
     user?.role === 'COLLECTEUR' ? 'APPORTEUR' :
     user?.role === 'COMMERCIAL' ? 'ACHETEUR' :
     undefined
 
-  const { data: existing, isLoading: loadingExisting } = useClient(id ?? '')
+  const clientId = isDirecteur ? '' : (id ?? '')
+  const { data: existing, isLoading: loadingExisting } = useClient(clientId)
   const createMutation = useCreateClient()
   const updateMutation = useUpdateClient()
 
@@ -166,6 +157,16 @@ export function ClientFormPage() {
         <div className="animate-pulse space-y-4 max-w-3xl">
           <div className="h-8 bg-slate-100 rounded w-48" />
           <div className="h-96 bg-slate-100 rounded-xl" />
+        </div>
+      </PageLayout>
+    )
+  }
+
+  if (isDirecteur) {
+    return (
+      <PageLayout title="Clients">
+        <div className="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-500">
+          Cette action n&apos;est pas disponible pour le rôle Directeur.
         </div>
       </PageLayout>
     )

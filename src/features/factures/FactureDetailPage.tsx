@@ -69,6 +69,13 @@ function Skeleton() {
   )
 }
 
+type WhatsAppResponse = {
+  waLink?: string
+  data?: {
+    waLink?: string
+  }
+}
+
 export function FactureDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
@@ -98,7 +105,7 @@ export function FactureDetailPage() {
 
   const linkValid = !!facture?.downloadToken
     && !!facture.downloadTokenExpiresAt
-    && new Date(facture.downloadTokenExpiresAt).getTime() > Date.now()
+    && new Date(facture.downloadTokenExpiresAt) > new Date()
 
   const handleDownload = async () => {
     if (!facture) return
@@ -119,8 +126,8 @@ export function FactureDetailPage() {
     if (!facture) return
     const pendingWindow = window.open('about:blank', '_blank')
     try {
-      const res = await sendFactureWhatsApp(facture.id)
-      const waLink = (res as any)?.waLink ?? (res as any)?.data?.waLink
+      const res = await sendFactureWhatsApp(facture.id) as WhatsAppResponse
+      const waLink = res?.waLink ?? res?.data?.waLink
       if (waLink) {
         if (pendingWindow) {
           pendingWindow.location.assign(waLink)

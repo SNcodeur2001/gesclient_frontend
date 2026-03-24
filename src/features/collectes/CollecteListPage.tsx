@@ -78,21 +78,21 @@ export function CollectesListPage() {
   const [searchVal, setSearchVal] = useState('')
 
   const { data, isLoading } = useCollectes(params)
-  const filters = {
+  const filters = useMemo(() => ({
     search: params.search,
     dateDebut: params.dateDebut,
     dateFin: params.dateFin,
-  }
+  }), [params.search, params.dateDebut, params.dateFin])
   const totalsParams = useMemo(
     () => ({ ...filters, page: 1, limit: 1 }),
-    [filters.search, filters.dateDebut, filters.dateFin]
+    [filters]
   )
   const { data: totalsData, isLoading: totalsLoading } = useCollectes(totalsParams)
 
-  const today = new Date().toISOString().split('T')[0]
+  const today = useMemo(() => new Date().toISOString().split('T')[0], [])
   const todayParams = useMemo(
     () => ({ ...filters, dateDebut: today, dateFin: today, page: 1, limit: 1 }),
-    [filters.search, today]
+    [filters, today]
   )
   const { data: todayData, isLoading: todayLoading } = useCollectes(todayParams)
 

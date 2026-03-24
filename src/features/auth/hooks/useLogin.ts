@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../../store/authStore'
 import api from '../../../lib/axios'
+import type { AxiosError } from 'axios'
 import type { User } from '../../../types'
 
 interface LoginCredentials {
@@ -55,14 +56,16 @@ export function useLogin(): UseLoginReturn {
       navigate('/dashboard', { replace: true })
       return true
 
-    } catch (err: any) {
+    } catch (err: unknown) {
       // Nettoyer le store en cas d'erreur
       useAuthStore.getState().logout()
 
-      if (err.response?.status === 401) {
+      const axiosError = err as AxiosError<{ message?: string }>
+
+      if (axiosError.response?.status === 401) {
         setError('Email ou mot de passe incorrect.')
-      } else if (err.response?.data?.message) {
-        setError(err.response.data.message)
+      } else if (axiosError.response?.data?.message) {
+        setError(axiosError.response.data.message)
       } else {
         setError('Une erreur est survenue. Veuillez réessayer.')
       }

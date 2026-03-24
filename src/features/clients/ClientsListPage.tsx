@@ -193,7 +193,9 @@ export function ClientsListPage() {
     try {
       await deleteMutation.mutateAsync(deleteTarget.id)
       setDeleteTarget(null)
-    } catch {}
+    } catch {
+      // TODO: afficher une notification d'erreur
+    }
   }
 
   const handleExport = () => {

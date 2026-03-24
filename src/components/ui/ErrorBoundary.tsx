@@ -16,7 +16,6 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   componentDidCatch(error: Error) {
-    // eslint-disable-next-line no-console
     console.error('UI crash captured by ErrorBoundary:', error)
   }
 

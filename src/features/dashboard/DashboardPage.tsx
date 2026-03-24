@@ -17,6 +17,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
+import type { TooltipProps } from "recharts";
 import {
   Users,
   ShoppingCart,
@@ -113,22 +114,26 @@ function KpiCard({ label, value, variation, icon }: KpiCardProps) {
 
 // ─── Custom Tooltip ───────────────────────────────────────────────────────────
 
-function ChartTooltipCA({ active, payload, label }: any) {
+function ChartTooltipCA({ active, payload, label }: TooltipProps<number, string>) {
   if (!active || !payload?.length) return null;
+  const value = payload[0]?.value;
+  const amount = typeof value === "number" ? value : Number(value ?? 0);
   return (
     <div className="bg-white border border-slate-200 rounded-lg px-3 py-2 shadow text-xs">
       <p className="text-slate-500 mb-1">{label}</p>
-      <p className="font-bold text-slate-800">{formatFCFA(payload[0].value)}</p>
+      <p className="font-bold text-slate-800">{formatFCFA(amount)}</p>
     </div>
   );
 }
 
-function ChartTooltipCollecte({ active, payload, label }: any) {
+function ChartTooltipCollecte({ active, payload, label }: TooltipProps<number, string>) {
   if (!active || !payload?.length) return null;
+  const value = payload[0]?.value;
+  const kg = typeof value === "number" ? value : Number(value ?? 0);
   return (
     <div className="bg-white border border-slate-200 rounded-lg px-3 py-2 shadow text-xs">
       <p className="text-slate-500 mb-1">{label}</p>
-      <p className="font-bold text-slate-800">{formatKg(payload[0].value)}</p>
+      <p className="font-bold text-slate-800">{formatKg(kg)}</p>
     </div>
   );
 }
@@ -334,8 +339,9 @@ function DashboardDirecteurPage() {
                     fill="#2563EB"
                     opacity={0.25}
                     radius={[4, 4, 0, 0]}
-                    onMouseEnter={(_, _index, e: any) => {
-                      if (e?.target) e.target.style.opacity = "1";
+                    onMouseEnter={(_, _index, e) => {
+                      const target = (e?.target ?? null) as SVGPathElement | null;
+                      if (target) target.style.opacity = "1";
                     }}
                   />
                 </BarChart>

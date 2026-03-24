@@ -77,7 +77,9 @@ export function NotificationsPage() {
   const handleMarkAll = async () => {
     try {
       await markAll.mutateAsync()
-    } catch {}
+    } catch {
+      // TODO: afficher une notification d'erreur
+    }
   }
 
   const handleOpen = async (n: NotificationResponseDto) => {
@@ -85,7 +87,7 @@ export function NotificationsPage() {
       try {
         await markOne.mutateAsync(n.id)
       } catch {
-        // ignore
+        // TODO: afficher une notification d'erreur
       }
     }
     navigate(`/notifications/${n.id}`)

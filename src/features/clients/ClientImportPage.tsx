@@ -41,7 +41,9 @@ export function ClientImportPage() {
       const res = await importMutation.mutateAsync(file)
       setResult(res)
       setFile(null)
-    } catch {}
+    } catch {
+      // TODO: afficher une notification d'erreur
+    }
   }
 
   const handleDownloadTemplate = async () => {
@@ -53,7 +55,9 @@ export function ClientImportPage() {
       a.download = 'clients-template.xlsx'
       a.click()
       URL.revokeObjectURL(url)
-    } catch {}
+    } catch {
+      // TODO: afficher une notification d'erreur
+    }
   }
 
   if (isDirecteur) {

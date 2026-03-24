@@ -154,7 +154,9 @@ export function NotificationDetailPage() {
                 onClick={async () => {
                   try {
                     await markRead.mutateAsync(notif.id)
-                  } catch {}
+                  } catch {
+                    // TODO: afficher une notification d'erreur
+                  }
                 }}
                 className="px-4 py-2 bg-[#2563EB] text-white rounded-lg text-sm font-semibold hover:bg-blue-700"
               >
