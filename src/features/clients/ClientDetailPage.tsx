@@ -38,7 +38,7 @@ function useClientCommandes(clientId: string, page: number) {
     queryKey: ['commandes', 'client', clientId, page],
     queryFn: async () => {
       const { data } = await api.get('/commandes', {
-        params: { clientId, page, limit: 5 },
+        params: { acheteurId: clientId, page, limit: 5 },
       })
       const raw = data?.data
       return {
