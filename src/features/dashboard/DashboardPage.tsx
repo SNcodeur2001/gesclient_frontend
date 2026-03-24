@@ -528,7 +528,9 @@ function formatDateTime(isoDate: string) {
 }
 
 function RecentActivityTable({ logs }: { logs: NotificationResponseDto[] }) {
-  if (logs.length === 0) {
+  const recentLogs = logs.slice(0, 5);
+
+  if (recentLogs.length === 0) {
     return (
       <div className="px-6 py-10 text-center text-slate-400 text-sm">
         Aucune activité récente
@@ -552,7 +554,7 @@ function RecentActivityTable({ logs }: { logs: NotificationResponseDto[] }) {
         </tr>
       </thead>
       <tbody className="divide-y divide-slate-100">
-        {logs.map((notif) => {
+        {recentLogs.map((notif) => {
           const style = NOTIF_TYPE_STYLES[notif.type] ?? {
             label: notif.type,
             className: "bg-slate-100 text-slate-500",
