@@ -13,8 +13,10 @@ export { FactureDetailPage } from './features/factures/FactureDetailPage'
 export { NotificationsPage } from './features/notifications/NotificationsPage'
 export { NotificationDetailPage } from './features/notifications/NotificationDetailPage'
 export { AuditPage } from './features/audit/AuditPage'
+export { AuditDetailPage } from './features/audit/AuditDetailPage'
 export { CollecteNewPage } from './features/collectes/CollecteNewPage'
 export { FacturesListPage } from './features/factures/FactureListPage'
+export { ProfilPage } from './features/profil/ProfilPage'
 
 // Page en cours de développement
 function ComingSoon({ title }: { title: string }) {
@@ -32,8 +34,6 @@ function ComingSoon({ title }: { title: string }) {
     </PageLayout>
   )
 }
-
-export const ProfilPage = () => <ComingSoon title="Mon Profil" />
 
 // export const ClientsListPage    = () => <ComingSoon title="Liste des Clients" />
 // export const ClientDetailPage   = () => <ComingSoon title="Détail Client" />

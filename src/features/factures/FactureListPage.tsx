@@ -142,6 +142,11 @@ export function FacturesListPage() {
   }
 
   const handleWhatsApp = async (facture: FactureResponse) => {
+    const phone = facture?.commande?.acheteur?.telephone
+    if (!phone || phone.trim().length === 0) {
+      addToast('Numéro WhatsApp manquant pour ce client.', 'error')
+      return
+    }
     const pendingWindow = window.open('about:blank', '_blank')
     try {
       const res = await sendFactureWhatsApp(facture.id) as WhatsAppResponse
@@ -248,10 +253,6 @@ export function FacturesListPage() {
             />
           </div>
 
-          {/* Export */}
-          <button className="flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg text-slate-600 text-sm font-medium hover:bg-slate-50 transition-colors">
-            <Download size={15} /> Exporter CSV
-          </button>
         </div>
 
         {/* ── Tableau ── */}

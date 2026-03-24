@@ -49,12 +49,3 @@ export async function createCollecte(
   })
   return (data?.data ?? data) as CollecteResponseDto
 }
-
-export async function deleteCollecte(
-  id: string,
-  options?: { silent?: boolean }
-) {
-  await api.delete(`/collectes/${id}`, {
-    silent: options?.silent,
-  })
-}

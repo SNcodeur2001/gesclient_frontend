@@ -4,7 +4,7 @@ import { useCollecte } from './hooks/usecollectes'
 import type { CollecteItemResponse } from '../../types'
 import {
   ArrowLeft, ClipboardList, User, Calendar,
-  Scale, Banknote, Printer, Download, Info,
+  Scale, Banknote, Info,
 } from 'lucide-react'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -289,16 +289,6 @@ export function CollecteDetailPage() {
                 <span className="text-xl font-bold text-[#2563EB]">{fmt(totalMontant)}</span>
               </div>
             </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center gap-3">
-            <button className="flex items-center gap-2 px-5 py-2.5 border border-slate-300 rounded text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors">
-              <Printer size={15} /> Imprimer Ticket
-            </button>
-            <button className="flex items-center gap-2 px-5 py-2.5 bg-[#2563EB] hover:bg-blue-700 text-white text-sm font-semibold rounded transition-colors shadow-sm shadow-blue-200">
-              <Download size={15} /> Télécharger PDF
-            </button>
           </div>
 
         </div>

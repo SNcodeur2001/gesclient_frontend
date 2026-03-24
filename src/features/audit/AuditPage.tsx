@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { PageLayout } from '../../components/layout/PageLayout'
 import { useAuditLogs } from './hooks/useAudit'
 import type { AuditAction, AuditLogResponseDto, AuditLogListParams } from '../../types'
@@ -33,9 +34,10 @@ function actionBadge(action: AuditAction) {
 }
 
 export function AuditPage() {
+  const navigate = useNavigate()
   const [params, setParams] = useState<AuditLogListParams>({
     page: 1,
-    limit: 10,
+    limit: 7,
     userId: undefined,
     action: undefined,
     entite: undefined,
@@ -158,7 +160,11 @@ export function AuditPage() {
               ) : items.length === 0 ? (
                 <tr><td colSpan={6} className="px-6 py-8 text-center text-slate-400">Aucun log</td></tr>
               ) : items.map((log: AuditLogResponseDto) => (
-                <tr key={log.id} className="hover:bg-slate-50 transition-colors">
+                <tr
+                  key={log.id}
+                  className="hover:bg-slate-50 transition-colors cursor-pointer"
+                  onClick={() => navigate(`/audit/${log.id}`)}
+                >
                   <td className="px-6 py-4 text-slate-600 font-medium">{formatDateTime(log.createdAt)}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">

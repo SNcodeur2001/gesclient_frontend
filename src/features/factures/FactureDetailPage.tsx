@@ -124,6 +124,11 @@ export function FactureDetailPage() {
 
   const handleSendWhatsApp = async () => {
     if (!facture) return
+    const phone = acheteur?.telephone
+    if (!phone || phone.trim().length === 0) {
+      addToast('Numéro WhatsApp manquant pour ce client.', 'error')
+      return
+    }
     const pendingWindow = window.open('about:blank', '_blank')
     try {
       const res = await sendFactureWhatsApp(facture.id) as WhatsAppResponse

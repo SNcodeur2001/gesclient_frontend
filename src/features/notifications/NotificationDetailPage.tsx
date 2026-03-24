@@ -51,12 +51,12 @@ function formatDateLong(iso: string) {
 export function NotificationDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { data = [], isLoading } = useNotifications()
+  const { data, isLoading } = useNotifications({ page: 1, limit: 10 })
   const markRead = useMarkNotificationRead()
 
   const notif = useMemo(
-    () => data.find((n) => n.id === id),
-    [data, id]
+    () => data?.items?.find((n) => n.id === id),
+    [data?.items, id]
   )
 
   useEffect(() => {

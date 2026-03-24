@@ -90,7 +90,10 @@ export function Sidebar() {
 
       {/* User + Logout */}
       <div className="px-4 py-4 border-t border-white/10">
-        <div className="flex items-center gap-3 mb-3">
+        <NavLink
+          to="/profil"
+          className="flex items-center gap-3 mb-3 rounded-lg px-2 py-2 hover:bg-white/10 transition-colors"
+        >
           <div className="w-9 h-9 rounded-full bg-[#2563EB] flex items-center justify-center text-white text-xs font-bold shrink-0">
             {initials}
           </div>
@@ -100,7 +103,7 @@ export function Sidebar() {
             </p>
             <Badge variant={user.role} className="mt-0.5" />
           </div>
-        </div>
+        </NavLink>
         <button
           onClick={logout}
           disabled={loading}

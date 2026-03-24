@@ -3,13 +3,14 @@ import {
   fetchNotifications,
   markNotificationRead,
   markAllNotificationsRead,
+  type NotificationListParams,
 } from '../api/notifications.api'
 import { useToastStore } from '../../../store/toastStore'
 
-export function useNotifications(lu?: boolean) {
+export function useNotifications(params?: NotificationListParams) {
   return useQuery({
-    queryKey: ['notifications', { lu }],
-    queryFn: () => fetchNotifications(lu),
+    queryKey: ['notifications', params],
+    queryFn: () => fetchNotifications(params),
     staleTime: 1000 * 60 * 1,
   })
 }

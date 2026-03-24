@@ -61,18 +61,20 @@ function timeAgo(iso: string) {
 export function NotificationsPage() {
   const navigate = useNavigate()
   const [tab, setTab] = useState<'all' | 'unread' | 'read'>('all')
+  const [page, setPage] = useState(1)
+  const limit = 10
 
-  const { data: all = [], isLoading } = useNotifications()
+  const lu =
+    tab === 'unread' ? false :
+    tab === 'read' ? true :
+    undefined
+
+  const { data, isLoading } = useNotifications({ lu, page, limit })
   const markAll = useMarkAllNotificationsRead()
   const markOne = useMarkNotificationRead()
 
-  const unreadCount = all.filter(n => !n.lu).length
-
-  const list = useMemo(() => {
-    if (tab === 'unread') return all.filter(n => !n.lu)
-    if (tab === 'read') return all.filter(n => n.lu)
-    return all
-  }, [all, tab])
+  const unreadCount = data?.totalNonLues ?? 0
+  const list = useMemo(() => data?.items ?? [], [data?.items])
 
   const handleMarkAll = async () => {
     try {
@@ -116,7 +118,7 @@ export function NotificationsPage() {
             <div className="flex items-center justify-between px-6 border-b border-slate-100">
               <div className="flex gap-8">
                 <button
-                  onClick={() => setTab('all')}
+                  onClick={() => { setTab('all'); setPage(1) }}
                   className={`py-4 border-b-2 text-sm font-bold ${
                     tab === 'all' ? 'border-[#2563EB] text-[#2563EB]' : 'border-transparent text-slate-500 hover:text-slate-700'
                   }`}
@@ -124,7 +126,7 @@ export function NotificationsPage() {
                   Toutes
                 </button>
                 <button
-                  onClick={() => setTab('unread')}
+                  onClick={() => { setTab('unread'); setPage(1) }}
                   className={`py-4 border-b-2 text-sm font-semibold flex items-center gap-2 ${
                     tab === 'unread' ? 'border-[#2563EB] text-[#2563EB]' : 'border-transparent text-slate-500 hover:text-slate-700'
                   }`}
@@ -133,7 +135,7 @@ export function NotificationsPage() {
                   <span className="bg-[#2563EB] text-white text-[10px] px-1.5 py-0.5 rounded-full">{unreadCount}</span>
                 </button>
                 <button
-                  onClick={() => setTab('read')}
+                  onClick={() => { setTab('read'); setPage(1) }}
                   className={`py-4 border-b-2 text-sm font-semibold ${
                     tab === 'read' ? 'border-[#2563EB] text-[#2563EB]' : 'border-transparent text-slate-500 hover:text-slate-700'
                   }`}
@@ -142,7 +144,7 @@ export function NotificationsPage() {
                 </button>
               </div>
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-                {list.length} notification{list.length > 1 ? 's' : ''}
+                {data?.total ?? list.length} notification{(data?.total ?? list.length) > 1 ? 's' : ''}
               </span>
             </div>
 
@@ -185,6 +187,28 @@ export function NotificationsPage() {
               )}
             </div>
           </div>
+
+          {data && data.totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-2">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="px-3 py-1.5 border border-slate-200 rounded text-xs font-semibold text-slate-500 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                Précédent
+              </button>
+              <span className="text-xs text-slate-500">
+                Page {page} / {data.totalPages}
+              </span>
+              <button
+                onClick={() => setPage(p => Math.min(data.totalPages, p + 1))}
+                disabled={page >= data.totalPages}
+                className="px-3 py-1.5 border border-slate-200 rounded text-xs font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                Suivant
+              </button>
+            </div>
+          )}
 
           <footer className="mt-8 mb-12 flex justify-center">
             <p className="text-slate-400 text-xs italic">Les notifications sont conservées pendant 30 jours.</p>

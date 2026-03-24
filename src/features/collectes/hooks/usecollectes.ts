@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   fetchCollectes, fetchCollecte,
-  createCollecte, deleteCollecte,
+  createCollecte,
 } from '../api/collectes.api'
 import type { CollecteListParams } from '../api/collectes.api'
 import type { CreateCollecteDto } from '../../../types'
@@ -37,21 +37,6 @@ export function useCreateCollecte() {
     },
     onError: (err) => {
       addToast(getApiErrorMessage(err, "Échec de l'enregistrement de la collecte"), 'error')
-    },
-  })
-}
-
-export function useDeleteCollecte() {
-  const queryClient = useQueryClient()
-  const addToast = useToastStore((s) => s.addToast)
-  return useMutation({
-    mutationFn: (id: string) => deleteCollecte(id, { silent: true }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['collectes'] })
-      addToast('Collecte supprimée avec succès', 'success')
-    },
-    onError: (err) => {
-      addToast(getApiErrorMessage(err, 'Erreur lors de la suppression'), 'error')
     },
   })
 }

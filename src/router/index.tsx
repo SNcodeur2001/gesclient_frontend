@@ -8,7 +8,7 @@ import {
   CollectesListPage, CollecteDetailPage, CollecteNewPage,
   FacturesListPage, FactureDetailPage,
   NotificationsPage, NotificationDetailPage,
-  AuditPage,
+  AuditPage, AuditDetailPage,
   ProfilPage,
 } from '../pages'
 
@@ -75,6 +75,7 @@ const router = createBrowserRouter([
       { path: '/factures',     element: <FacturesListPage /> },
       { path: '/factures/:id', element: <FactureDetailPage /> },
       { path: '/audit',        element: <AuditPage /> },
+      { path: '/audit/:id',    element: <AuditDetailPage /> },
     ],
   },
 

@@ -23,3 +23,8 @@ export async function fetchAuditLogs(params: AuditLogListParams): Promise<AuditL
     totalPages: raw?.totalPages ?? 1,
   }
 }
+
+export async function fetchAuditLog(id: string): Promise<AuditLogResponseDto | null> {
+  const { data } = await api.get(`/audit/${id}`)
+  return (data?.data ?? data ?? null) as AuditLogResponseDto | null
+}
