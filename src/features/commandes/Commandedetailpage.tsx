@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useCommande } from './hooks/useCommandes'
+import { useQuery } from '@tanstack/react-query'
 import { PageLayout } from '../../components/layout/PageLayout'
 import { Badge } from '../../components/ui/Badge'
 import { useAuthStore } from '../../store/authStore'
 import { useToastStore } from '../../store/toastStore'
 import { getApiErrorMessage } from '../../lib/apiError'
 import { fetchFactureByCommandeId, downloadFacturePDF } from '../factures/api/factures.api'
-import type { FactureResponse } from '../../types'
 import {
   ArrowLeft, FileText, RefreshCw, Plus,
 } from 'lucide-react'
@@ -275,30 +275,18 @@ export function CommandeDetailPage() {
   const canMutate = user?.role !== 'DIRECTEUR'
   const [showPaiement, setShowPaiement] = useState(false)
   const [showStatut, setShowStatut] = useState(false)
-  const [facture, setFacture] = useState<FactureResponse | null>(null)
-  const [factureChecked, setFactureChecked] = useState(false)
-
   const { data: cmd, isLoading } = useCommande(id ?? '')
 
-  useEffect(() => {
-    if (!cmd?.id) return
-    let isMounted = true
-    setFactureChecked(false)
-    setFacture(null)
-    fetchFactureByCommandeId(cmd.id)
-      .then((res) => {
-        if (isMounted) setFacture(res)
-      })
-      .catch(() => {
-        if (isMounted) setFacture(null)
-      })
-      .finally(() => {
-        if (isMounted) setFactureChecked(true)
-      })
-    return () => {
-      isMounted = false
-    }
-  }, [cmd?.id])
+  const {
+    data: facture,
+    isLoading: factureLoading,
+  } = useQuery({
+    queryKey: ['factures', 'commande', cmd?.id],
+    queryFn: () => fetchFactureByCommandeId(cmd!.id),
+    enabled: !!cmd?.id,
+    retry: false,
+  })
+  const factureChecked = !!cmd?.id && !factureLoading
 
   if (isLoading) return <PageLayout title="Détail Commande"><Skeleton /></PageLayout>
   if (!cmd) return (
