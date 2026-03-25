@@ -68,14 +68,21 @@ const router = createBrowserRouter([
     ],
   },
 
-  // Routes DIRECTEUR seulement
+  // Routes factures — DIRECTEUR + COMMERCIAL
   {
     element: <AuthGuard allowedRoles={['DIRECTEUR', 'COMMERCIAL']} />,
     children: [
       { path: '/factures',     element: <FacturesListPage /> },
       { path: '/factures/:id', element: <FactureDetailPage /> },
-      { path: '/audit',        element: <AuditPage /> },
-      { path: '/audit/:id',    element: <AuditDetailPage /> },
+    ],
+  },
+
+  // Routes audit — DIRECTEUR seulement
+  {
+    element: <AuthGuard allowedRoles={['DIRECTEUR']} />,
+    children: [
+      { path: '/audit',     element: <AuditPage /> },
+      { path: '/audit/:id', element: <AuditDetailPage /> },
     ],
   },
 

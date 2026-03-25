@@ -31,12 +31,19 @@ export async function fetchNotifications(
   }
 }
 
-export async function markNotificationRead(id: string) {
-  const { data } = await api.patch(`/notifications/${id}/read`)
+export async function markNotificationRead(
+  id: string,
+  options?: { silent?: boolean }
+) {
+  const { data } = await api.patch(`/notifications/${id}/read`, undefined, {
+    silent: options?.silent,
+  })
   return data
 }
 
-export async function markAllNotificationsRead() {
-  const { data } = await api.patch('/notifications/read-all')
+export async function markAllNotificationsRead(options?: { silent?: boolean }) {
+  const { data } = await api.patch('/notifications/read-all', undefined, {
+    silent: options?.silent,
+  })
   return data
 }

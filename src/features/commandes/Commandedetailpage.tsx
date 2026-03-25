@@ -1,11 +1,15 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useCommande } from './hooks/useCommandes'
 import { PageLayout } from '../../components/layout/PageLayout'
 import { Badge } from '../../components/ui/Badge'
 import { useAuthStore } from '../../store/authStore'
+import { useToastStore } from '../../store/toastStore'
+import { getApiErrorMessage } from '../../lib/apiError'
+import { fetchFactureByCommandeId, downloadFacturePDF } from '../factures/api/factures.api'
+import type { FactureResponse } from '../../types'
 import {
-  ArrowLeft, MessageCircle, FileText, RefreshCw, Plus,
+  ArrowLeft, FileText, RefreshCw, Plus,
 } from 'lucide-react'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -38,22 +42,88 @@ function Skeleton() {
 
 // ─── Modal Paiement ───────────────────────────────────────────────────────────
 
-function PaiementModal({ commandeId, onClose }: { commandeId: string; onClose: () => void }) {
+function PaiementModal({
+  commandeId,
+  commandeType,
+  commandeStatut,
+  soldeRestant,
+  acompteMinimum,
+  acompteVerse,
+  onClose,
+}: {
+  commandeId: string
+  commandeType: string
+  commandeStatut: string
+  soldeRestant: number
+  acompteMinimum: number | null
+  acompteVerse: number
+  onClose: () => void
+}) {
   const [form, setForm] = useState({ type: 'ACOMPTE', montant: '', modePaiement: 'VIREMENT' })
   const [loading, setLoading] = useState(false)
+  const isSurPlace = commandeType === 'SUR_PLACE'
+  const isDistance = commandeType === 'A_DISTANCE'
+  const isStatutPrete = commandeStatut === 'PRETE'
+  const isSecondPaiementDistance = isDistance && acompteVerse > 0 && soldeRestant > 0
+  const blockSecondPaiement = isSecondPaiementDistance && !isStatutPrete
+  const addToast = useToastStore((s) => s.addToast)
+  const [initialized, setInitialized] = useState(false)
+
+  useEffect(() => {
+    if (initialized) return
+    if (isSurPlace || (isSecondPaiementDistance && isStatutPrete)) {
+      setForm((f) => ({
+        ...f,
+        type: 'SOLDE',
+        montant: String(soldeRestant),
+      }))
+      setInitialized(true)
+      return
+    }
+    if (commandeType === 'A_DISTANCE' && acompteVerse === 0 && acompteMinimum) {
+      setForm((f) => ({
+        ...f,
+        type: 'ACOMPTE',
+        montant: String(Math.round(acompteMinimum)),
+      }))
+    }
+    setInitialized(true)
+  }, [
+    initialized,
+    isSurPlace,
+    soldeRestant,
+    commandeType,
+    acompteMinimum,
+    acompteVerse,
+    isSecondPaiementDistance,
+    isStatutPrete,
+  ])
 
   const handleSubmit = async () => {
+    if (blockSecondPaiement) {
+      addToast('La commande doit être au statut "Prête" pour solder.', 'error')
+      return
+    }
     setLoading(true)
     try {
       // POST /commandes/:id/paiements
       const api = (await import('../../lib/axios')).default
-      await api.post(`/commandes/${commandeId}/paiements`, {
+      const { data } = await api.post(`/commandes/${commandeId}/paiements`, {
         type: form.type,
         montant: Number(form.montant),
         modePaiement: form.modePaiement,
+      }, {
+        silent: true,
       })
+      if (form.type === 'ACOMPTE') {
+        addToast('Acompte enregistré.', 'success')
+      } else {
+        addToast('Solde enregistré. Commande finalisée.', 'success')
+      }
       onClose()
       window.location.reload()
+    } catch (err) {
+      addToast(getApiErrorMessage(err, 'Paiement refusé.'), 'error')
     } finally {
       setLoading(false)
     }
@@ -69,6 +139,7 @@ function PaiementModal({ commandeId, onClose }: { commandeId: string; onClose: (
           <select
             value={form.type}
             onChange={e => setForm(f => ({ ...f, type: e.target.value }))}
+            disabled={isSurPlace || isSecondPaiementDistance}
             className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#2563EB]"
           >
             <option value="ACOMPTE">Acompte</option>
@@ -83,9 +154,16 @@ function PaiementModal({ commandeId, onClose }: { commandeId: string; onClose: (
             value={form.montant}
             onChange={e => setForm(f => ({ ...f, montant: e.target.value }))}
             placeholder="Ex: 225000"
+            disabled={isSurPlace || isSecondPaiementDistance}
             className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#2563EB]"
           />
         </div>
+
+        {blockSecondPaiement && (
+          <div className="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
+            Passez la commande au statut <span className="font-bold">Prête</span> pour pouvoir solder.
+          </div>
+        )}
 
         <div>
           <label className="block text-xs font-semibold text-slate-600 mb-1.5">Mode de paiement</label>
@@ -110,7 +188,7 @@ function PaiementModal({ commandeId, onClose }: { commandeId: string; onClose: (
           </button>
           <button
             onClick={handleSubmit}
-            disabled={loading || !form.montant}
+            disabled={loading || !form.montant || blockSecondPaiement}
             className="px-5 py-2 text-sm font-semibold bg-[#2563EB] text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
           >
             {loading ? 'Enregistrement...' : 'Confirmer'}
@@ -123,19 +201,24 @@ function PaiementModal({ commandeId, onClose }: { commandeId: string; onClose: (
 
 // ─── Modal Statut ─────────────────────────────────────────────────────────────
 
-function StatutModal({ commandeId, current, onClose }: {
-  commandeId: string; current: string; onClose: () => void
+function StatutModal({ commandeId, current, soldeRestant, onClose }: {
+  commandeId: string; current: string; soldeRestant: number; onClose: () => void
 }) {
   const [statut, setStatut] = useState(current)
   const [loading, setLoading] = useState(false)
+  const paiementComplet = soldeRestant === 0
+  const addToast = useToastStore((s) => s.addToast)
 
   const handleSubmit = async () => {
     setLoading(true)
     try {
       const api = (await import('../../lib/axios')).default
-      await api.patch(`/commandes/${commandeId}/statut`, { statut })
+      await api.patch(`/commandes/${commandeId}/statut`, { statut }, { silent: true })
+      addToast('Statut mis à jour.', 'success')
       onClose()
       window.location.reload()
+    } catch (err) {
+      addToast(getApiErrorMessage(err, 'Impossible de changer le statut.'), 'error')
     } finally {
       setLoading(false)
     }
@@ -152,9 +235,8 @@ function StatutModal({ commandeId, current, onClose }: {
         >
           <option value="EN_ATTENTE_ACOMPTE">En attente acompte</option>
           <option value="EN_PREPARATION">En préparation</option>
-          <option value="PRETE">Prête</option>
-          <option value="FINALISEE">Finalisée</option>
-          <option value="ANNULEE">Annulée</option>
+          {!paiementComplet && <option value="PRETE">Prête</option>}
+          <option value="FINALISEE">{paiementComplet ? 'Soldée' : 'Finalisée'}</option>
         </select>
         <div className="flex justify-end gap-3 pt-1">
           <button onClick={onClose} className="px-4 py-2 text-sm border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50">
@@ -189,11 +271,34 @@ export function CommandeDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { user } = useAuthStore()
+  const addToast = useToastStore((s) => s.addToast)
   const canMutate = user?.role !== 'DIRECTEUR'
   const [showPaiement, setShowPaiement] = useState(false)
   const [showStatut, setShowStatut] = useState(false)
+  const [facture, setFacture] = useState<FactureResponse | null>(null)
+  const [factureChecked, setFactureChecked] = useState(false)
 
   const { data: cmd, isLoading } = useCommande(id ?? '')
+
+  useEffect(() => {
+    if (!cmd?.id) return
+    let isMounted = true
+    setFactureChecked(false)
+    setFacture(null)
+    fetchFactureByCommandeId(cmd.id)
+      .then((res) => {
+        if (isMounted) setFacture(res)
+      })
+      .catch(() => {
+        if (isMounted) setFacture(null)
+      })
+      .finally(() => {
+        if (isMounted) setFactureChecked(true)
+      })
+    return () => {
+      isMounted = false
+    }
+  }, [cmd?.id])
 
   if (isLoading) return <PageLayout title="Détail Commande"><Skeleton /></PageLayout>
   if (!cmd) return (
@@ -206,6 +311,32 @@ export function CommandeDetailPage() {
   const progression = cmd.montantTTC > 0 ? Math.round((totalVerse / cmd.montantTTC) * 100) : 0
   const totalItems = cmd.items?.length ?? (cmd.quantite ? 1 : 0)
   const totalKg = cmd.items?.reduce((s, i) => s + i.quantite, 0) ?? cmd.quantite ?? 0
+  const isSurPlace = cmd.type === 'SUR_PLACE'
+  const paiementComplet = cmd.soldeRestant === 0
+
+  const handleOpenFacture = async () => {
+    try {
+      const resolved = facture ?? await fetchFactureByCommandeId(cmd.id)
+      navigate(`/factures/${resolved.id}`)
+    } catch (err) {
+      addToast(getApiErrorMessage(err, 'Aucune facture disponible pour cette commande'), 'error')
+    }
+  }
+
+  const handleDownloadFacture = async () => {
+    try {
+      const resolved = facture ?? await fetchFactureByCommandeId(cmd.id)
+      const blob = await downloadFacturePDF(resolved.id)
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${resolved.numero}.pdf`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (err) {
+      addToast(getApiErrorMessage(err, 'Impossible de télécharger la facture'), 'error')
+    }
+  }
 
   return (
     <PageLayout title="Détail Commande">
@@ -227,6 +358,11 @@ export function CommandeDetailPage() {
               <div className="flex gap-2">
                 <Badge variant={cmd.statut} />
                 <Badge variant={cmd.type} />
+                {paiementComplet && (
+                  <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-700 uppercase">
+                    Paiement complet
+                  </span>
+                )}
               </div>
             </div>
             <p className="text-slate-500 text-sm ml-11">
@@ -237,17 +373,23 @@ export function CommandeDetailPage() {
 
           {/* Boutons actions */}
           <div className="flex flex-wrap gap-2 lg:justify-end">
-            {canMutate && (
-              <button className="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-lg text-slate-600 text-sm font-semibold hover:bg-slate-50 transition-colors">
-                <MessageCircle size={15} /> WhatsApp
-              </button>
-            )}
-            {canMutate && (
-              <button className="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-lg text-slate-600 text-sm font-semibold hover:bg-slate-50 transition-colors">
+            {canMutate && factureChecked && facture && (
+              <button
+                onClick={handleOpenFacture}
+                className="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-lg text-slate-600 text-sm font-semibold hover:bg-slate-50 transition-colors"
+              >
                 <FileText size={15} /> Facture
               </button>
             )}
-            {canMutate && (
+            {canMutate && factureChecked && facture && (
+              <button
+                onClick={handleDownloadFacture}
+                className="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-lg text-slate-600 text-sm font-semibold hover:bg-slate-50 transition-colors"
+              >
+                <FileText size={15} /> Télécharger PDF
+              </button>
+            )}
+            {canMutate && !isSurPlace && (
               <button
                 onClick={() => setShowStatut(true)}
                 className="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-lg text-slate-600 text-sm font-semibold hover:bg-slate-50 transition-colors"
@@ -465,6 +607,11 @@ export function CommandeDetailPage() {
       {showPaiement && canMutate && (
         <PaiementModal
           commandeId={id ?? ''}
+          commandeType={cmd.type}
+          commandeStatut={cmd.statut}
+          soldeRestant={cmd.soldeRestant}
+          acompteMinimum={cmd.acompteMinimum}
+          acompteVerse={cmd.acompteVerse}
           onClose={() => setShowPaiement(false)}
         />
       )}
@@ -472,6 +619,7 @@ export function CommandeDetailPage() {
         <StatutModal
           commandeId={id ?? ''}
           current={cmd.statut}
+          soldeRestant={cmd.soldeRestant}
           onClose={() => setShowStatut(false)}
         />
       )}

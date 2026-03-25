@@ -36,7 +36,7 @@ export function useCreateCommande() {
       addToast('Commande créée avec succès', 'success')
     },
     onError: (err) => {
-      addToast(getApiErrorMessage(err, "Échec de la création de la commande"), 'error')
+      addToast(getApiErrorMessage(err, 'Impossible de créer la commande.'), 'error')
     },
   })
 }
@@ -53,7 +53,7 @@ export function useUpdateCommande() {
       addToast('Commande mise à jour avec succès', 'success')
     },
     onError: (err) => {
-      addToast(getApiErrorMessage(err, 'Erreur lors de la mise à jour'), 'error')
+      addToast(getApiErrorMessage(err, 'Impossible de mettre à jour la commande.'), 'error')
     },
   })
 }
@@ -68,7 +68,7 @@ export function useDeleteCommande() {
       addToast('Commande supprimée avec succès', 'success')
     },
     onError: (err) => {
-      addToast(getApiErrorMessage(err, 'Erreur lors de la suppression'), 'error')
+      addToast(getApiErrorMessage(err, 'Impossible de supprimer la commande.'), 'error')
     },
   })
 }

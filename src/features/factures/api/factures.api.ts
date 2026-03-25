@@ -36,6 +36,13 @@ export async function fetchFacture(id: string): Promise<FactureResponse> {
   return (data?.data ?? data) as FactureResponse
 }
 
+export async function fetchFactureByCommandeId(commandeId: string): Promise<FactureResponse> {
+  const { data } = await api.get(`/factures/commande/${commandeId}`, {
+    silent: true,
+  })
+  return (data?.data ?? data) as FactureResponse
+}
+
 export async function downloadFacturePDF(id: string): Promise<Blob> {
   const { data } = await api.get(`/factures/${id}/pdf`, {
     responseType: 'blob',

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../../store/authStore'
 import api from '../../../lib/axios'
+import { useToastStore } from '../../../store/toastStore'
 
 interface UseLogoutReturn {
   logout: () => Promise<void>
@@ -11,6 +12,7 @@ interface UseLogoutReturn {
 export function useLogout(): UseLogoutReturn {
   const navigate = useNavigate()
   const { refreshToken, logout: clearAuth } = useAuthStore()
+  const addToast = useToastStore((s) => s.addToast)
   const [loading, setLoading] = useState(false)
 
   const logout = async (): Promise<void> => {
@@ -25,6 +27,7 @@ export function useLogout(): UseLogoutReturn {
     } finally {
       clearAuth()
       setLoading(false)
+      addToast('Déconnexion effectuée.', 'success')
       navigate('/login', { replace: true })
     }
   }

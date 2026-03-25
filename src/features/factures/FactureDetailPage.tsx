@@ -117,6 +117,7 @@ export function FactureDetailPage() {
       a.download = `${facture.numero}.pdf`
       a.click()
       URL.revokeObjectURL(url)
+      addToast('PDF téléchargé.', 'success')
     } catch (err) {
       addToast(getApiErrorMessage(err, "Impossible de télécharger le PDF"), 'error')
     }

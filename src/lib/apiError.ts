@@ -8,10 +8,14 @@ export function getApiErrorMessage(
     const data = error.response?.data as Record<string, unknown> | undefined
     const errors = Array.isArray(data?.errors) ? data?.errors : undefined
     const firstError = errors?.[0] as Record<string, unknown> | string | undefined
+    const errorObj = (typeof data?.error === 'object' && data?.error !== null)
+      ? (data?.error as Record<string, unknown>)
+      : undefined
 
     const message =
       (typeof data?.message === 'string' ? data.message : undefined) ??
       (typeof data?.error === 'string' ? data.error : undefined) ??
+      (typeof errorObj?.message === 'string' ? errorObj.message : undefined) ??
       (typeof firstError === 'string' ? firstError : undefined) ??
       (typeof firstError === 'object' && firstError && typeof firstError.message === 'string'
         ? firstError.message

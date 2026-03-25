@@ -26,48 +26,72 @@ export async function fetchClient(id: string) {
   return (data?.data ?? data) as ClientResponseDto
 }
 
-export async function createClient(dto: CreateClientDto) {
-  const { data } = await api.post('/clients', dto)
+export async function createClient(
+  dto: CreateClientDto,
+  options?: { silent?: boolean }
+) {
+  const { data } = await api.post('/clients', dto, {
+    silent: options?.silent,
+  })
   return (data?.data ?? data) as ClientResponseDto
 }
 
-export async function updateClient(id: string, dto: UpdateClientDto) {
-  const { data } = await api.patch(`/clients/${id}`, dto)
+export async function updateClient(
+  id: string,
+  dto: UpdateClientDto,
+  options?: { silent?: boolean }
+) {
+  const { data } = await api.patch(`/clients/${id}`, dto, {
+    silent: options?.silent,
+  })
   return (data?.data ?? data) as ClientResponseDto
 }
 
-export async function deleteClient(id: string) {
-  await api.delete(`/clients/${id}`)
+export async function deleteClient(id: string, options?: { silent?: boolean }) {
+  await api.delete(`/clients/${id}`, { silent: options?.silent })
 }
 
-export async function exportClientsCSV(params?: Partial<ClientListParams>) {
+export async function exportClientsCSV(
+  params?: Partial<ClientListParams>,
+  options?: { silent?: boolean }
+) {
   const response = await api.get('/clients/export', {
     params,
     responseType: 'blob',
+    silent: options?.silent,
   })
   return response.data as Blob
 }
 
-export async function exportClientsExcel(params?: Partial<ClientListParams>) {
+export async function exportClientsExcel(
+  params?: Partial<ClientListParams>,
+  options?: { silent?: boolean }
+) {
   const response = await api.get('/clients/export/excel', {
     params,
     responseType: 'blob',
+    silent: options?.silent,
   })
   return response.data as Blob
 }
 
-export async function downloadClientsTemplate() {
+export async function downloadClientsTemplate(options?: { silent?: boolean }) {
   const response = await api.get('/clients/template', {
     responseType: 'blob',
+    silent: options?.silent,
   })
   return response.data as Blob
 }
 
-export async function importClients(file: File) {
+export async function importClients(
+  file: File,
+  options?: { silent?: boolean }
+) {
   const formData = new FormData()
   formData.append('file', file)
   const { data } = await api.post('/clients/import', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
+    silent: options?.silent,
   })
   return (data?.data ?? data) as ImportClientsResult
 }
