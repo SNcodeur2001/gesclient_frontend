@@ -1,4 +1,3 @@
-import { PageLayout } from './components/layout/PageLayout'
 export { DashboardPage } from './features/dashboard/DashboardPage'
 export {ClientsListPage} from './features/clients/ClientsListPage'
 export { ClientFormPage } from './features/clients/ClientFormPage'
@@ -17,23 +16,6 @@ export { AuditDetailPage } from './features/audit/AuditDetailPage'
 export { CollecteNewPage } from './features/collectes/CollecteNewPage'
 export { FacturesListPage } from './features/factures/FactureListPage'
 export { ProfilPage } from './features/profil/ProfilPage'
-
-// Page en cours de développement
-function ComingSoon({ title }: { title: string }) {
-  return (
-    <PageLayout title={title}>
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-2xl">🚧</span>
-          </div>
-          <h2 className="text-lg font-semibold text-slate-700 mb-1">{title}</h2>
-          <p className="text-sm text-slate-400">Page en cours de développement</p>
-        </div>
-      </div>
-    </PageLayout>
-  )
-}
 
 // export const ClientsListPage    = () => <ComingSoon title="Liste des Clients" />
 // export const ClientDetailPage   = () => <ComingSoon title="Détail Client" />

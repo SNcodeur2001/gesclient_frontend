@@ -108,7 +108,7 @@ function PaiementModal({
     try {
       // POST /commandes/:id/paiements
       const api = (await import('../../lib/axios')).default
-      const { data } = await api.post(`/commandes/${commandeId}/paiements`, {
+      await api.post(`/commandes/${commandeId}/paiements`, {
         type: form.type,
         montant: Number(form.montant),
         modePaiement: form.modePaiement,

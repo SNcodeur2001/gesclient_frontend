@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { PageLayout } from '../../components/layout/PageLayout'
 import { useAuditLog } from './hooks/useAudit'
-import type { AuditLogResponseDto, AuditAction } from '../../types'
+import type { AuditAction } from '../../types'
 import {
   ArrowLeft, ShieldCheck, User, Calendar, FileText, Info,
 } from 'lucide-react'
