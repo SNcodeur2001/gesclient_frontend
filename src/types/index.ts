@@ -319,6 +319,8 @@ export interface FactureResponse {
   dateEnvoiWhatsApp?: string
   telephoneEnvoye?: string
   fichierPath?: string | null
+  fichierUrl?: string | null
+  cloudinaryPublicId?: string | null
   downloadToken?: string | null
   downloadTokenExpiresAt?: string | null
   genereParId: string
